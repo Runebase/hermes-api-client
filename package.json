@@ -1,0 +1,19 @@
+{
+  "name": "hermes-api-client",
+  "version": "0.0.0",
+  "description": "API client for Hermes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Runebase/hermes-api-client.git"
+  },
+  "author": "Bago",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Runebase/hermes-api-client/issues"
+  },
+  "homepage": "https://github.com/Runebase/hermes-api-client#readme"
+}
