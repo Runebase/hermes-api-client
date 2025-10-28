@@ -1,6 +1,6 @@
 {
-  "name": "hermes-api-client",
-  "version": "0.0.0",
+  "name": "@hermes-core/api-client",
+  "version": "0.0.1",
   "description": "API client for Hermes",
   "main": "src/index.mjs",
   "type": "module",
