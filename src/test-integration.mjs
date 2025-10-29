@@ -24,7 +24,12 @@ async function runIntegrationTest() {
     // Test private endpoint (with auth)
     console.log('Fetching wallets...');
     const wallets = await client.private.getWallets();
-    console.log('Wallets:', wallets);
+    console.log('Wallets: ', wallets);
+
+    console.log('Fetching guild wallets...');
+    const guildId = '873322086347702354' // Script Kiddie Test Server
+    const guildWallets = await client.public.getGuildWallets(guildId)
+    console.log('Guild Wallets: ', guildWallets);
 
     // Test socket (listen for an event—simulate/update as needed)
     console.log('Setting up socket listener...');

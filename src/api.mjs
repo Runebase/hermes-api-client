@@ -20,8 +20,18 @@ export function createPublicApi(config) {
     }
   }
 
+  async function getGuildWallets(guildId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/wallets`); // Prefix if needed
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch wallets');
+    }
+  }
+
   return {
     getOperations,
+    getGuildWallets,
   };
 }
 
