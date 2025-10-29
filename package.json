@@ -5,6 +5,7 @@
   "main": "src/index.mjs",
   "type": "module",
   "scripts": {
+    "test:integration": "node src/test-integration.mjs",
     "start": "node src/index.mjs",
     "dev": "nodemon src/index.mjs",
     "lint": "eslint src",
