@@ -53,7 +53,37 @@ export function createPrivateApi(config) {
     }
   }
 
+  async function tip({ ticker, recipientIds, amountPerRecipient, notifyChannelId }) {
+    try {
+      const response = await api.post('/api/tip', {
+        ticker,
+        recipientIds,
+        amountPerRecipient,
+        notifyChannelId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to send tip');
+    }
+  }
+
+  async function guildTip(guildId, { ticker, recipientIds, amountPerRecipient, notifyChannelId }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/tip`, {
+        ticker,
+        recipientIds,
+        amountPerRecipient,
+        notifyChannelId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to send guild tip');
+    }
+  }
+
   return {
     getWallets,
+    tip,
+    guildTip,
   };
 }

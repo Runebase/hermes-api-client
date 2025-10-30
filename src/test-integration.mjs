@@ -1,5 +1,6 @@
 // test-integration.mjs
 import dotenv from 'dotenv';
+
 import { createHermesClient } from './index.mjs'; // Adjust path if needed
 
 // Load .env early
@@ -27,14 +28,44 @@ async function runIntegrationTest() {
     console.log('Wallets: ', wallets);
 
     console.log('Fetching guild wallets...');
-    const guildId = '873322086347702354' // Script Kiddie Test Server
-    const guildWallets = await client.public.getGuildWallets(guildId)
+    const guildId = '873322086347702354'; // Script Kiddie Test Server
+    const guildWallets = await client.public.getGuildWallets(guildId);
     console.log('Guild Wallets: ', guildWallets);
+
+    // Test tip endpoint
+    console.log('Sending tip...');
+    const tipResult = await client.private.tip({
+      ticker: 'RUNES',
+      recipientIds: [
+        '370026641323327491',
+        '432117250833645570'
+      ],
+      amountPerRecipient: '0.001',
+      notifyChannelId: '1163655822719602688' // Optional
+    });
+    console.log('Tip result: ', tipResult);
+
+    // Test guild tip endpoint
+    console.log('Sending guild tip...');
+    const guildTipResult = await client.private.guildTip(guildId, {
+      ticker: 'RUNES',
+      recipientIds: [
+        '370026641323327491',
+        '432117250833645570'
+      ],
+      amountPerRecipient: '0.001',
+      notifyChannelId: '1163655822719602688' // Optional
+    });
+    console.log('Guild tip result: ', guildTipResult);
 
     // Test socket (listen for an event—simulate/update as needed)
     console.log('Setting up socket listener...');
     client.socket.socket.on('wallets_updated', (data) => {
       console.log('Received wallets_updated:', data);
+    });
+
+    client.socket.socket.on('tip_received', (data) => {
+      console.log('Received tip_received:', data);
     });
 
     // Optional: Emit a ping or wait for a real-time update
