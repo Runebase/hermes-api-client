@@ -19,7 +19,7 @@ if (!apiUrl || !socketUrl || !apiKey) {
 console.log(`Using API_URL: ${apiUrl}, SOCKET_URL: ${socketUrl}`); // Optional: Log for confirmation
 
 // Parse command-line flags to determine which tests to run
-// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --flood --rain --soak --sockets
+// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --flood --rain --soak --guild-flood --guild-rain --guild-soak --sockets
 // If no flags are provided, run all tests by default
 const args = process.argv.slice(2);
 const runAll = args.length === 0;
@@ -32,6 +32,9 @@ const runReactdrop = runAll || args.includes('--reactdrop');
 const runFlood = runAll || args.includes('--flood');
 const runRain = runAll || args.includes('--rain');
 const runSoak = runAll || args.includes('--soak');
+const runGuildFlood = runAll || args.includes('--guild-flood');
+const runGuildRain = runAll || args.includes('--guild-rain');
+const runGuildSoak = runAll || args.includes('--guild-soak');
 const runSockets = runAll || args.includes('--sockets');
 
 const guildId = '873322086347702354'; // script kiddies chat
@@ -135,6 +138,45 @@ async function runIntegrationTest() {
         roleId: '1059268963307102238', // Optional
       });
       console.log('Soak result: ', soakResult);
+    }
+
+    if (runGuildFlood) {
+      // Test guild flood endpoint
+      console.log('Sending guild flood...');
+      const guildFloodResult = await client.private.guildFlood(guildId, {
+        ticker: 'RUNES',
+        amount: '0.001',
+        maxRecipients: '400',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238', // Optional
+      });
+      console.log('Guild flood result: ', guildFloodResult);
+    }
+
+    if (runGuildRain) {
+      // Test guild rain endpoint
+      console.log('Sending guild rain...');
+      const guildRainResult = await client.private.guildRain(guildId, {
+        ticker: 'RUNES',
+        amount: '0.001',
+        maxRecipients: '400',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238', // Optional
+      });
+      console.log('Guild rain result: ', guildRainResult);
+    }
+
+    if (runGuildSoak) {
+      // Test guild soak endpoint
+      console.log('Sending guild soak...');
+      const guildSoakResult = await client.private.guildSoak(guildId, {
+        ticker: 'RUNES',
+        amount: '0.001',
+        maxRecipients: '400',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238', // Optional
+      });
+      console.log('Guild soak result: ', guildSoakResult);
     }
 
     let shouldWait = false;

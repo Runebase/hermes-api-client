@@ -139,7 +139,7 @@ export function createPrivateApi(config) {
       });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate flood');
+      throw new Error(error.response?.data?.error || 'Failed to initiate rain');
     }
   }
 
@@ -160,7 +160,7 @@ export function createPrivateApi(config) {
       });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate flood');
+      throw new Error(error.response?.data?.error || 'Failed to initiate soak');
     }
   }
 
@@ -178,6 +178,69 @@ export function createPrivateApi(config) {
     }
   }
 
+  async function guildFlood(guildId, { 
+    ticker,
+    amount,
+    maxRecipients,
+    channelId,
+    roleId,
+  }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/flood`, {
+        ticker,
+        amount,
+        maxRecipients,
+        channelId,
+        roleId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate guild flood');
+    }
+  }
+
+  async function guildRain(guildId, { 
+    ticker,
+    amount,
+    maxRecipients,
+    channelId,
+    roleId,
+  }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/rain`, {
+        ticker,
+        amount,
+        maxRecipients,
+        channelId,
+        roleId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate guild rain');
+    }
+  }
+
+  async function guildSoak(guildId, { 
+    ticker,
+    amount,
+    maxRecipients,
+    channelId,
+    roleId,
+  }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/soak`, {
+        ticker,
+        amount,
+        maxRecipients,
+        channelId,
+        roleId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate guild soak');
+    }
+  }
+
   return {
     getWallets,
     tip,
@@ -186,5 +249,8 @@ export function createPrivateApi(config) {
     rain,
     soak,
     guildTip,
+    guildFlood,
+    guildRain,
+    guildSoak,
   };
 }
