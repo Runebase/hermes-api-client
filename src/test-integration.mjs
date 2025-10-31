@@ -19,7 +19,7 @@ if (!apiUrl || !socketUrl || !apiKey) {
 console.log(`Using API_URL: ${apiUrl}, SOCKET_URL: ${socketUrl}`); // Optional: Log for confirmation
 
 // Parse command-line flags to determine which tests to run
-// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --flood --sockets
+// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --flood --rain --soak --sockets
 // If no flags are provided, run all tests by default
 const args = process.argv.slice(2);
 const runAll = args.length === 0;
@@ -30,6 +30,8 @@ const runTip = runAll || args.includes('--tip');
 const runGuildTip = runAll || args.includes('--guild-tip');
 const runReactdrop = runAll || args.includes('--reactdrop');
 const runFlood = runAll || args.includes('--flood');
+const runRain = runAll || args.includes('--rain');
+const runSoak = runAll || args.includes('--soak');
 const runSockets = runAll || args.includes('--sockets');
 
 const guildId = '873322086347702354'; // script kiddies chat
@@ -107,6 +109,32 @@ async function runIntegrationTest() {
         roleId: '1059268963307102238', // Optional
       });
       console.log('Flood result: ', floodResult);
+    }
+
+    if (runRain) {
+      // Test rain endpoint
+      console.log('Sending rain...');
+      const rainResult = await client.private.rain({
+        ticker: 'RUNES',
+        amount: '0.001',
+        maxRecipients: '400',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238', // Optional
+      });
+      console.log('Rain result: ', rainResult);
+    }
+
+    if (runSoak) {
+      // Test soak endpoint
+      console.log('Sending soak...');
+      const soakResult = await client.private.soak({
+        ticker: 'RUNES',
+        amount: '0.001',
+        maxRecipients: '400',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238', // Optional
+      });
+      console.log('Soak result: ', soakResult);
     }
 
     let shouldWait = false;
