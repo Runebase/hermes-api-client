@@ -101,6 +101,27 @@ export function createPrivateApi(config) {
     }
   }
 
+  async function flood({ 
+    ticker,
+    amount,
+    maxRecipients,
+    channelId,
+    roleId,
+  }) {
+    try {
+      const response = await api.post('/api/airdrop/flood', {
+        ticker,
+        amount,
+        maxRecipients,
+        channelId,
+        roleId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate flood');
+    }
+  }
+
   async function guildTip(guildId, { ticker, recipientIds, amountPerRecipient, notifyChannelId }) {
     try {
       const response = await api.post(`/api/guilds/${guildId}/tip`, {
@@ -119,6 +140,7 @@ export function createPrivateApi(config) {
     getWallets,
     tip,
     reactdrop,
+    flood,
     guildTip,
   };
 }

@@ -19,7 +19,7 @@ if (!apiUrl || !socketUrl || !apiKey) {
 console.log(`Using API_URL: ${apiUrl}, SOCKET_URL: ${socketUrl}`); // Optional: Log for confirmation
 
 // Parse command-line flags to determine which tests to run
-// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --sockets
+// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --flood --sockets
 // If no flags are provided, run all tests by default
 const args = process.argv.slice(2);
 const runAll = args.length === 0;
@@ -29,6 +29,7 @@ const runGuildWallets = runAll || args.includes('--guild-wallets');
 const runTip = runAll || args.includes('--tip');
 const runGuildTip = runAll || args.includes('--guild-tip');
 const runReactdrop = runAll || args.includes('--reactdrop');
+const runFlood = runAll || args.includes('--flood');
 const runSockets = runAll || args.includes('--sockets');
 
 const guildId = '873322086347702354'; // script kiddies chat
@@ -84,7 +85,7 @@ async function runIntegrationTest() {
     if (runReactdrop) {
       // Test reactdrop endpoint
       console.log('Sending reactdrop...');
-      const guildReactdropResult = await client.private.reactdrop({
+      const reactdropResult = await client.private.reactdrop({
         ticker: 'RUNES',
         amount: '0.001',
         channelId: '1163655822719602688',
@@ -92,7 +93,20 @@ async function runIntegrationTest() {
         emoji: null,    
         roleId: '1059268963307102238',
       });
-      console.log('Reactdrop result: ', guildReactdropResult);
+      console.log('Reactdrop result: ', reactdropResult);
+    }
+
+    if (runFlood) {
+      // Test flood endpoint
+      console.log('Sending flood...');
+      const floodResult = await client.private.flood({
+        ticker: 'RUNES',
+        amount: '0.001',
+        maxRecipients: '400',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238', // Optional
+      });
+      console.log('Flood result: ', floodResult);
     }
 
     let shouldWait = false;
