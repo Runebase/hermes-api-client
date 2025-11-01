@@ -101,6 +101,27 @@ export function createPrivateApi(config) {
     }
   }
 
+  async function partydrop({ 
+    ticker,
+    amount,
+    channelId,
+    duration = 300000,  
+    roleId,
+  }) {
+    try {
+      const response = await api.post('/api/airdrop/partydrop', {
+        ticker,
+        amount,
+        channelId,
+        duration, // duration in milli-seconds    
+        roleId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate partydrop');
+    }
+  }
+
   async function flood({ 
     ticker,
     amount,
@@ -245,6 +266,7 @@ export function createPrivateApi(config) {
     getWallets,
     tip,
     reactdrop,
+    partydrop,
     flood,
     rain,
     soak,

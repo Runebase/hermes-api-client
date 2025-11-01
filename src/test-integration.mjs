@@ -19,7 +19,7 @@ if (!apiUrl || !socketUrl || !apiKey) {
 console.log(`Using API_URL: ${apiUrl}, SOCKET_URL: ${socketUrl}`); // Optional: Log for confirmation
 
 // Parse command-line flags to determine which tests to run
-// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --flood --rain --soak --guild-flood --guild-rain --guild-soak --sockets
+// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --partydrop --flood --rain --soak --guild-flood --guild-rain --guild-soak --sockets
 // If no flags are provided, run all tests by default
 const args = process.argv.slice(2);
 const runAll = args.length === 0;
@@ -29,6 +29,7 @@ const runGuildWallets = runAll || args.includes('--guild-wallets');
 const runTip = runAll || args.includes('--tip');
 const runGuildTip = runAll || args.includes('--guild-tip');
 const runReactdrop = runAll || args.includes('--reactdrop');
+const runPartydrop = runAll || args.includes('--partydrop');
 const runFlood = runAll || args.includes('--flood');
 const runRain = runAll || args.includes('--rain');
 const runSoak = runAll || args.includes('--soak');
@@ -94,11 +95,24 @@ async function runIntegrationTest() {
         ticker: 'RUNES',
         amount: '0.001',
         channelId: '1163655822719602688',
-        durationMs: 300000,
+        duration: 300000,
         emoji: null,    
         roleId: '1059268963307102238',
       });
       console.log('Reactdrop result: ', reactdropResult);
+    }
+
+    if (runPartydrop) {
+      // Test partydrop endpoint
+      console.log('Sending partydrop...');
+      const partydropResult = await client.private.partydrop({
+        ticker: 'RUNES',
+        amount: '0.001',
+        channelId: '1163655822719602688',
+        duration: 300000,
+        roleId: '1059268963307102238',
+      });
+      console.log('Partydrop result: ', partydropResult);
     }
 
     if (runFlood) {
