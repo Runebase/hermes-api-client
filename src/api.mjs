@@ -82,7 +82,7 @@ export function createPrivateApi(config) {
     ticker,
     amount,
     channelId,
-    durationMs = 300000,
+    duration = 300000,
     emoji,    
     roleId,
   }) {
@@ -91,7 +91,7 @@ export function createPrivateApi(config) {
         ticker,
         amount,
         channelId,
-        durationMs,
+        duration, // duration in milli-seconds
         emoji,        
         roleId,
       });
