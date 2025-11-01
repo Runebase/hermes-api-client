@@ -19,7 +19,7 @@ if (!apiUrl || !socketUrl || !apiKey) {
 console.log(`Using API_URL: ${apiUrl}, SOCKET_URL: ${socketUrl}`); // Optional: Log for confirmation
 
 // Parse command-line flags to determine which tests to run
-// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --partydrop --flood --rain --soak --guild-flood --guild-rain --guild-soak --sockets
+// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --partydrop --flood --rain --soak --guild-flood --guild-rain --guild-soak --guild-reactdrop --sockets
 // If no flags are provided, run all tests by default
 const args = process.argv.slice(2);
 const runAll = args.length === 0;
@@ -36,6 +36,7 @@ const runSoak = runAll || args.includes('--soak');
 const runGuildFlood = runAll || args.includes('--guild-flood');
 const runGuildRain = runAll || args.includes('--guild-rain');
 const runGuildSoak = runAll || args.includes('--guild-soak');
+const runGuildReactdrop = runAll || args.includes('--guild-reactdrop');
 const runSockets = runAll || args.includes('--sockets');
 
 const guildId = '873322086347702354'; // script kiddies chat
@@ -191,6 +192,20 @@ async function runIntegrationTest() {
         roleId: '1059268963307102238', // Optional
       });
       console.log('Guild soak result: ', guildSoakResult);
+    }
+
+    if (runGuildReactdrop) {
+      // Test guild reactdrop endpoint
+      console.log('Sending guild reactdrop...');
+      const guildReactdropResult = await client.private.guildReactdrop(guildId, {
+        ticker: 'RUNES',
+        amount: '0.001',
+        channelId: '1163655822719602688',
+        duration: 300000,
+        emoji: null,    
+        roleId: '1059268963307102238',
+      });
+      console.log('Guild reactdrop result: ', guildReactdropResult);
     }
 
     let shouldWait = false;
