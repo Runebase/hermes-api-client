@@ -285,6 +285,27 @@ export function createPrivateApi(config) {
     }
   }
 
+  async function guildPartydrop(guildId, { 
+    ticker,
+    amount,
+    channelId,
+    duration = 300000,  
+    roleId,
+  }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/partydrop`, {
+        ticker,
+        amount,
+        channelId,
+        duration, // duration in milli-seconds    
+        roleId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate guild partydrop');
+    }
+  }
+
   return {
     getWallets,
     tip,
@@ -298,5 +319,6 @@ export function createPrivateApi(config) {
     guildRain,
     guildSoak,
     guildReactdrop,
+    guildPartydrop,
   };
 }
