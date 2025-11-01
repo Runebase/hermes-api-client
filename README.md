@@ -4,6 +4,12 @@ NodeJS API client for Hermes
 
 ## Installation
 
+### Production
+```bash
+npm install @hermes-core/api-client
+```
+
+### Development
 1. Clone or download this repository.
 
 2. Install dependencies:
@@ -19,6 +25,33 @@ API_KEY=your_api_key_here
 ```
 ## Usage
 Import and initialize the client in your Node.js application:
+
+
+### Production
+```javascript
+import { createHermesClient } from '@hermes-core/api-client';
+
+const client = createHermesClient({
+  apiUrl: 'https://placeholder.com',
+  socketUrl: 'https://placeholder.com',
+  apiKey: 'YOUR_API_KEY',
+});
+
+// Example: Fetch private wallets
+const wallets = await client.private.getWallets();
+console.log(wallets);
+
+// Example: Send a tip
+const tipResult = await client.private.tip({
+  ticker: 'RUNES',
+  recipientIds: ['user_id_1', 'user_id_2'],
+  amountPerRecipient: '0.001',
+  notifyChannelId: 'channel_id' // Optional
+});
+console.log(tipResult);
+```
+
+### Development
 ```javascript
 import { createHermesClient } from './index.mjs'; // Adjust path as needed
 

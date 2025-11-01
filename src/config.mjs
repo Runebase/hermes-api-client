@@ -6,3 +6,4 @@ export function createConfig(options = {}) {
     apiKey: options.apiKey || process.env.API_KEY || '',
   };
 }
+
