@@ -39,10 +39,42 @@ export function createPublicApi(config) {
     }
   }
 
+  async function getTriviaCategories({ page = 1, pageSize = 25 } = {}) {
+    try {
+      const response = await api.get('/api/trivia/categories', { params: { page, pageSize } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch trivia categories');
+    }
+  }
+
+  async function getTriviaQuestions({ categoryId, page = 1, pageSize = 25 } = {}) {
+    try {
+      const params = { page, pageSize };
+      if (categoryId) {params.categoryId = categoryId;}
+      const response = await api.get('/api/trivia/questions', { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch trivia questions');
+    }
+  }
+
+  async function getTriviaQuestionById(id) {
+    try {
+      const response = await api.get(`/api/trivia/questions/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch trivia question');
+    }
+  }
+
   return {
     getOperations,
     getCoins,
     getGuildWallets,
+    getTriviaCategories,
+    getTriviaQuestions,
+    getTriviaQuestionById,
   };
 }
 

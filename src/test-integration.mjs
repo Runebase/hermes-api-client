@@ -19,7 +19,7 @@ if (!apiUrl || !socketUrl || !apiKey) {
 console.log(`Using API_URL: ${apiUrl}, SOCKET_URL: ${socketUrl}`); // Optional: Log for confirmation
 
 // Parse command-line flags to determine which tests to run
-// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --partydrop --flood --rain --soak --guild-flood --guild-rain --guild-soak --guild-reactdrop --guild-partydrop --sockets
+// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --partydrop --flood --rain --soak --guild-flood --guild-rain --guild-soak --guild-reactdrop --guild-partydrop --sockets --trivia-categories --trivia-questions --trivia-questions-by-id
 // If no flags are provided, run all tests by default
 const args = process.argv.slice(2);
 const runAll = args.length === 0;
@@ -39,6 +39,9 @@ const runGuildSoak = runAll || args.includes('--guild-soak');
 const runGuildReactdrop = runAll || args.includes('--guild-reactdrop');
 const runGuildPartydrop = runAll || args.includes('--guild-partydrop');
 const runSockets = runAll || args.includes('--sockets');
+const runTriviaCategories = runAll || args.includes('--trivia-categories');
+const runTriviaQuestions = runAll || args.includes('--trivia-questions');
+const runTriviaQuestionById = runAll || args.includes('--trivia-questions-by-id');
 
 const guildId = '873322086347702354'; // script kiddies chat
 
@@ -220,6 +223,24 @@ async function runIntegrationTest() {
         roleId: '1059268963307102238',
       });
       console.log('Guild partydrop result: ', guildPartydropResult);
+    }
+
+    if (runTriviaCategories) {
+      console.log('Fetching trivia categories...');
+      const categories = await client.public.getTriviaCategories();
+      console.log('Trivia Categories: ', categories);
+    }
+
+    if (runTriviaQuestions) {
+      console.log('Fetching trivia questions...');
+      const questions = await client.public.getTriviaQuestions();
+      console.log('Trivia Questions: ', questions);
+    }
+
+    if (runTriviaQuestionById) {
+      console.log('Fetching trivia question by ID...');
+      const question = await client.public.getTriviaQuestionById('8e429348-8572-45e1-bc74-880fe684f4a0');
+      console.log('Trivia Question by ID: ', question);
     }
 
     let shouldWait = false;
