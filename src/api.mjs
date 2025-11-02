@@ -207,7 +207,7 @@ export function createPrivateApi(config) {
     roleId,
   }) {
     try {
-      const response = await api.post(`/api/guilds/${guildId}/flood`, {
+      const response = await api.post(`/api/guilds/${guildId}/airdrop/flood`, {
         ticker,
         amount,
         maxRecipients,
@@ -228,7 +228,7 @@ export function createPrivateApi(config) {
     roleId,
   }) {
     try {
-      const response = await api.post(`/api/guilds/${guildId}/rain`, {
+      const response = await api.post(`/api/guilds/${guildId}/airdrop/rain`, {
         ticker,
         amount,
         maxRecipients,
@@ -249,7 +249,7 @@ export function createPrivateApi(config) {
     roleId,
   }) {
     try {
-      const response = await api.post(`/api/guilds/${guildId}/soak`, {
+      const response = await api.post(`/api/guilds/${guildId}/airdrop/soak`, {
         ticker,
         amount,
         maxRecipients,
@@ -271,7 +271,7 @@ export function createPrivateApi(config) {
     roleId,
   }) {
     try {
-      const response = await api.post(`/api/guilds/${guildId}/reactdrop`, {
+      const response = await api.post(`/api/guilds/${guildId}/airdrop/reactdrop`, {
         ticker,
         amount,
         channelId,
@@ -293,7 +293,7 @@ export function createPrivateApi(config) {
     roleId,
   }) {
     try {
-      const response = await api.post(`/api/guilds/${guildId}/partydrop`, {
+      const response = await api.post(`/api/guilds/${guildId}/airdrop/partydrop`, {
         ticker,
         amount,
         channelId,
