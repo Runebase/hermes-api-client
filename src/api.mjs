@@ -117,6 +117,7 @@ export function createPrivateApi(config) {
     duration = 300000,
     emoji,    
     roleId,
+    captcha = 'math', // 'math', 'none' or 'trivia'
   }) {
     try {
       const response = await api.post('/api/airdrop/reactdrop', {
@@ -126,6 +127,7 @@ export function createPrivateApi(config) {
         duration, // duration in milli-seconds
         emoji,        
         roleId,
+        captcha,
       });
       return response.data;
     } catch (error) {
@@ -301,6 +303,7 @@ export function createPrivateApi(config) {
     duration = 300000,
     emoji,    
     roleId,
+    captcha = 'math', // 'math', 'none' or 'trivia'
   }) {
     try {
       const response = await api.post(`/api/guilds/${guildId}/airdrop/reactdrop`, {
@@ -310,6 +313,7 @@ export function createPrivateApi(config) {
         duration, // duration in milli-seconds
         emoji,        
         roleId,
+        captcha,
       });
       return response.data;
     } catch (error) {
