@@ -219,6 +219,33 @@ export function createPrivateApi(config) {
     }
   }
 
+  async function trivia({
+    ticker,
+    amount,
+    channelId,
+    duration = 300000,
+    roleId,
+    categoryId,     // optional UUID
+    questionId,     // optional UUID
+  }) {
+    try {
+      const payload = {
+        ticker,
+        amount,
+        channelId,
+        duration,
+        roleId,
+      };
+      if (categoryId) {payload.categoryId = categoryId;}
+      if (questionId) {payload.questionId = questionId;}
+
+      const response = await api.post('/api/airdrop/trivia', payload);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate trivia drop');
+    }
+  }
+
   async function guildTip(guildId, { ticker, recipientIds, amountPerRecipient, notifyChannelId }) {
     try {
       const response = await api.post(`/api/guilds/${guildId}/tip`, {
@@ -342,10 +369,38 @@ export function createPrivateApi(config) {
     }
   }
 
+  async function guildTrivia(guildId, {
+    ticker,
+    amount,
+    channelId,
+    duration = 300000,
+    roleId,
+    categoryId,
+    questionId,
+  }) {
+    try {
+      const payload = {
+        ticker,
+        amount,
+        channelId,
+        duration,
+        roleId,
+      };
+      if (categoryId) {payload.categoryId = categoryId;}
+      if (questionId) {payload.questionId = questionId;}
+
+      const response = await api.post(`/api/guilds/${guildId}/airdrop/trivia`, payload);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate guild trivia drop');
+    }
+  }
+
   return {
     getWallets,
     tip,
     reactdrop,
+    trivia,
     partydrop,
     flood,
     rain,
@@ -356,5 +411,6 @@ export function createPrivateApi(config) {
     guildSoak,
     guildReactdrop,
     guildPartydrop,
+    guildTrivia,
   };
 }

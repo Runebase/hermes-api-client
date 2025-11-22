@@ -42,6 +42,8 @@ const runSockets = runAll || args.includes('--sockets');
 const runTriviaCategories = runAll || args.includes('--trivia-categories');
 const runTriviaQuestions = runAll || args.includes('--trivia-questions');
 const runTriviaQuestionById = runAll || args.includes('--trivia-questions-by-id');
+const runTrivia = runAll || args.includes('--trivia');
+const runGuildTrivia = runAll || args.includes('--guild-trivia');
 
 const guildId = '873322086347702354'; // script kiddies chat
 
@@ -242,6 +244,42 @@ async function runIntegrationTest() {
       const question = await client.public.getTriviaQuestionById('8e429348-8572-45e1-bc74-880fe684f4a0');
       console.log('Trivia Question by ID: ', question);
     }
+
+    
+
+    if (runTrivia) {
+      console.log('Sending trivia drop (user-funded)...');
+      const triviaResult = await client.private.trivia({
+        ticker: 'RUNES',
+        amount: '0.01',
+        channelId: '1163655822719602688',
+        duration: 600000, // 10 minutes
+        roleId: '1059268963307102238',
+        // Try all three modes:
+        // 1. Global random (no category/question)
+        // 2. Category random → uncomment categoryId
+        // categoryId: 'a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8',
+        // 3. Exact question → uncomment questionId
+        // questionId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+      });
+      console.log('Trivia drop result:', triviaResult);
+    }
+
+    if (runGuildTrivia) {
+      console.log('Sending guild trivia drop...');
+      const guildTriviaResult = await client.private.guildTrivia(guildId, {
+        ticker: 'RUNES',
+        amount: '0.01',
+        channelId: '1163655822719602688',
+        duration: 600000,
+        roleId: '1059268963307102238',
+        // categoryId: 'a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8',
+        // questionId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+      });
+      console.log('Guild trivia drop result:', guildTriviaResult);
+    }
+
+
 
     let shouldWait = false;
 
