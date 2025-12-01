@@ -396,6 +396,52 @@ export function createPrivateApi(config) {
     }
   }
 
+   async function sleet({ 
+    ticker,
+    amount,
+    channelId,
+    roleId,
+    maxRecipients = 400,
+    duration = 900000, // 15 minutes default (matches backend)
+  }) {
+    try {
+      const response = await api.post('/api/airdrop/sleet', {
+        ticker,
+        amount,
+        channelId,
+        roleId,
+        maxRecipients,
+        duration,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate sleet');
+    }
+  }
+
+  async function guildSleet(guildId, { 
+    ticker,
+    amount,
+    channelId,
+    roleId,
+    maxRecipients = 400,
+    duration = 900000,
+  }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/airdrop/sleet`, {
+        ticker,
+        amount,
+        channelId,
+        roleId,
+        maxRecipients: String(maxRecipients),
+        duration,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate guild sleet');
+    }
+  }
+
   return {
     getWallets,
     tip,
@@ -405,10 +451,12 @@ export function createPrivateApi(config) {
     flood,
     rain,
     soak,
+    sleet,
     guildTip,
     guildFlood,
     guildRain,
     guildSoak,
+    guildSleet,
     guildReactdrop,
     guildPartydrop,
     guildTrivia,

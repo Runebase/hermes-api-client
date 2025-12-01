@@ -44,6 +44,8 @@ const runTriviaQuestions = runAll || args.includes('--trivia-questions');
 const runTriviaQuestionById = runAll || args.includes('--trivia-questions-by-id');
 const runTrivia = runAll || args.includes('--trivia');
 const runGuildTrivia = runAll || args.includes('--guild-trivia');
+const runSleet = runAll || args.includes('--sleet');
+const runGuildSleet = runAll || args.includes('--guild-sleet');
 
 const guildId = '873322086347702354'; // script kiddies chat
 
@@ -63,6 +65,32 @@ async function runIntegrationTest() {
       const guildId = '873322086347702354'; // Script Kiddie Test Server
       const guildWallets = await client.public.getGuildWallets(guildId);
       console.log('Guild Wallets: ', guildWallets);
+    }
+
+    if (runSleet) {
+      console.log('Sending sleet (user-funded)...');
+      const sleetResult = await client.private.sleet({
+        ticker: 'RUNES',
+        amount: '0.01',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238',
+        maxRecipients: 400,
+        duration: 900000, // 15 min
+      });
+      console.log('Sleet result:', sleetResult);
+    }
+
+    if (runGuildSleet) {
+      console.log('Sending guild sleet (guid-funded)...');
+      const guildSleetResult = await client.private.guildSleet(guildId, {
+        ticker: 'RUNES',
+        amount: '0.01',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238',
+        maxRecipients: 400,
+        duration: 900000,
+      });
+      console.log('Guild sleet result:', guildSleetResult);
     }
 
     if (runTip) {
