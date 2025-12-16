@@ -219,6 +219,27 @@ export function createPrivateApi(config) {
     }
   }
 
+  async function wave({ 
+    ticker,
+    amount,
+    maxRecipients,
+    channelId,
+    roleId,
+  }) {
+    try {
+      const response = await api.post('/api/airdrop/wave', {
+        ticker,
+        amount,
+        maxRecipients,
+        channelId,
+        roleId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate wave');
+    }
+  }
+
   async function trivia({
     ticker,
     amount,
@@ -396,6 +417,28 @@ export function createPrivateApi(config) {
     }
   }
 
+  async function guildWave(guildId, { 
+    ticker,
+    amount,
+    maxRecipients,
+    channelId,
+    roleId,
+  }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/airdrop/wave`, {
+        ticker,
+        amount,
+        maxRecipients,
+        channelId,
+        roleId,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to initiate guild wave');
+    }
+  }
+
+
    async function sleet({ 
     ticker,
     amount,
@@ -452,11 +495,13 @@ export function createPrivateApi(config) {
     rain,
     soak,
     sleet,
+    wave,
     guildTip,
     guildFlood,
     guildRain,
     guildSoak,
     guildSleet,
+    guildWave,
     guildReactdrop,
     guildPartydrop,
     guildTrivia,

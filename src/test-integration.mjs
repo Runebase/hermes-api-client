@@ -31,6 +31,7 @@ const runGuildTip = runAll || args.includes('--guild-tip');
 const runReactdrop = runAll || args.includes('--reactdrop');
 const runPartydrop = runAll || args.includes('--partydrop');
 const runFlood = runAll || args.includes('--flood');
+const runWave = runAll || args.includes('--wave');
 const runRain = runAll || args.includes('--rain');
 const runSoak = runAll || args.includes('--soak');
 const runGuildFlood = runAll || args.includes('--guild-flood');
@@ -46,6 +47,7 @@ const runTrivia = runAll || args.includes('--trivia');
 const runGuildTrivia = runAll || args.includes('--guild-trivia');
 const runSleet = runAll || args.includes('--sleet');
 const runGuildSleet = runAll || args.includes('--guild-sleet');
+const runGuildWave = runAll || args.includes('--guild-wave');
 
 const guildId = '873322086347702354'; // script kiddies chat
 
@@ -163,6 +165,19 @@ async function runIntegrationTest() {
       console.log('Flood result: ', floodResult);
     }
 
+    if (runWave) {
+      // Test flood endpoint
+      console.log('Sending wave...');
+      const waveResult = await client.private.wave({
+        ticker: 'RUNES',
+        amount: '0.001',
+        maxRecipients: '400',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238', // Optional
+      });
+      console.log('Wave result: ', waveResult);
+    }
+
     if (runRain) {
       // Test rain endpoint
       console.log('Sending rain...');
@@ -200,6 +215,19 @@ async function runIntegrationTest() {
         roleId: '1059268963307102238', // Optional
       });
       console.log('Guild flood result: ', guildFloodResult);
+    }
+
+    if (runGuildWave) {
+      // Test guild flood endpoint
+      console.log('Sending guild wave...');
+      const guildWaveResult = await client.private.guildWave(guildId, {
+        ticker: 'RUNES',
+        amount: '0.001',
+        maxRecipients: '400',
+        channelId: '1163655822719602688',
+        roleId: '1059268963307102238', // Optional
+      });
+      console.log('Guild wave result: ', guildWaveResult);
     }
 
     if (runGuildRain) {
