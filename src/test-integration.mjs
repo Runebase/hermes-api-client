@@ -55,6 +55,8 @@ async function runIntegrationTest() {
   try {
     const client = createHermesClient(); // No options needed—uses process.env via createConfig
 
+    const health = await client.public.health();
+    console.log('API Health:', health);
     if (runWallets) {
       // Test private endpoint (with auth)
       console.log('Fetching wallets...');

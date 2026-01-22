@@ -10,6 +10,15 @@ export function createPublicApi(config) {
     },
   });
 
+  async function health() {
+    try {
+      const response = await api.get('/api/health');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Health check failed');
+    }
+  }
+
   // Example public endpoint function (adjust as needed)
   async function getOperations() {
     try {
@@ -69,6 +78,7 @@ export function createPublicApi(config) {
   }
 
   return {
+    health,
     getOperations,
     getCoins,
     getGuildWallets,
