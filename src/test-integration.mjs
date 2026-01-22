@@ -135,6 +135,7 @@ async function runIntegrationTest() {
         duration: 300000,
         emoji: null,    
         roleId: '1059268963307102238',
+        maxRecipients: '2000',
       });
       console.log('Reactdrop result: ', reactdropResult);
     }
@@ -148,6 +149,7 @@ async function runIntegrationTest() {
         channelId: '1163655822719602688',
         duration: 300000,
         roleId: '1059268963307102238',
+        maxRecipients: '2000',
       });
       console.log('Partydrop result: ', partydropResult);
     }
@@ -266,6 +268,7 @@ async function runIntegrationTest() {
         duration: 300000,
         emoji: null,    
         roleId: '1059268963307102238',
+        maxRecipients: '2000',
       });
       console.log('Guild reactdrop result: ', guildReactdropResult);
     }
@@ -279,6 +282,7 @@ async function runIntegrationTest() {
         channelId: '1163655822719602688',
         duration: 300000,
         roleId: '1059268963307102238',
+        maxRecipients: '2000',
       });
       console.log('Guild partydrop result: ', guildPartydropResult);
     }
@@ -317,6 +321,7 @@ async function runIntegrationTest() {
         // categoryId: 'a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8',
         // 3. Exact question → uncomment questionId
         // questionId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+        maxRecipients: '2000',
       });
       console.log('Trivia drop result:', triviaResult);
     }
@@ -331,6 +336,7 @@ async function runIntegrationTest() {
         roleId: '1059268963307102238',
         // categoryId: 'a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8',
         // questionId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+        maxRecipients: '2000',
       });
       console.log('Guild trivia drop result:', guildTriviaResult);
     }

@@ -118,6 +118,7 @@ export function createPrivateApi(config) {
     emoji,    
     roleId,
     captcha = 'math', // 'math', 'none' or 'trivia'
+    maxRecipients = '2000'
   }) {
     try {
       const response = await api.post('/api/airdrop/reactdrop', {
@@ -128,6 +129,7 @@ export function createPrivateApi(config) {
         emoji,        
         roleId,
         captcha,
+        maxRecipients,
       });
       return response.data;
     } catch (error) {
@@ -141,6 +143,7 @@ export function createPrivateApi(config) {
     channelId,
     duration = 300000,  
     roleId,
+    maxRecipients = '2000'
   }) {
     try {
       const response = await api.post('/api/airdrop/partydrop', {
@@ -149,6 +152,7 @@ export function createPrivateApi(config) {
         channelId,
         duration, // duration in milli-seconds    
         roleId,
+        maxRecipients,
       });
       return response.data;
     } catch (error) {
@@ -248,6 +252,7 @@ export function createPrivateApi(config) {
     roleId,
     categoryId,     // optional UUID
     questionId,     // optional UUID
+    maxRecipients = '2000',
   }) {
     try {
       const payload = {
@@ -256,6 +261,7 @@ export function createPrivateApi(config) {
         channelId,
         duration,
         roleId,
+        maxRecipients,
       };
       if (categoryId) {payload.categoryId = categoryId;}
       if (questionId) {payload.questionId = questionId;}
@@ -352,6 +358,7 @@ export function createPrivateApi(config) {
     emoji,    
     roleId,
     captcha = 'math', // 'math', 'none' or 'trivia'
+    maxRecipients = '2000',
   }) {
     try {
       const response = await api.post(`/api/guilds/${guildId}/airdrop/reactdrop`, {
@@ -362,6 +369,7 @@ export function createPrivateApi(config) {
         emoji,        
         roleId,
         captcha,
+        maxRecipients,
       });
       return response.data;
     } catch (error) {
@@ -375,6 +383,7 @@ export function createPrivateApi(config) {
     channelId,
     duration = 300000,  
     roleId,
+    maxRecipients = '2000',
   }) {
     try {
       const response = await api.post(`/api/guilds/${guildId}/airdrop/partydrop`, {
@@ -383,6 +392,7 @@ export function createPrivateApi(config) {
         channelId,
         duration, // duration in milli-seconds    
         roleId,
+        maxRecipients,
       });
       return response.data;
     } catch (error) {
@@ -398,6 +408,7 @@ export function createPrivateApi(config) {
     roleId,
     categoryId,
     questionId,
+    maxRecipients = '2000',
   }) {
     try {
       const payload = {
@@ -406,6 +417,7 @@ export function createPrivateApi(config) {
         channelId,
         duration,
         roleId,
+        maxRecipients,
       };
       if (categoryId) {payload.categoryId = categoryId;}
       if (questionId) {payload.questionId = questionId;}
