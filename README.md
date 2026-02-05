@@ -72,6 +72,38 @@ console.log(tipResult);
 ```
 Refer to the source code (index.mjs) for full API methods, including public endpoints, guild operations, reactdrops, and socket events.
 
+## Guild Security Sessions
+Privileged guild operations (guild tips, guild airdrops, schedules, rewards, faucet config) require a guild security session.
+
+```javascript
+import { createHermesClient } from '@hermes-core/api-client';
+
+const client = createHermesClient({
+  apiUrl: 'https://placeholder.com',
+  socketUrl: 'https://placeholder.com',
+  apiKey: 'YOUR_API_KEY',
+  guildSecurity: {
+    autoRefresh: true,
+    onSessionUpdate: (guildId, session) => {
+      console.log('Session updated:', guildId, session);
+    },
+  },
+});
+
+// Login to guild security
+const session = await client.private.guildSecurityLogin('GUILD_ID', {
+  password: 'YOUR_PASSWORD',
+  ttlMinutes: 30,
+});
+
+// Privileged guild call (auto injects X-Guild-Authorization)
+await client.private.guildTip('GUILD_ID', {
+  ticker: 'RUNES',
+  recipientIds: ['user_id_1'],
+  amountPerRecipient: '0.01',
+});
+```
+
 ## Integration Tests
 ```bash
 # Run all tests
