@@ -60,7 +60,9 @@ export function createPublicApi(config) {
   async function getTriviaQuestions({ categoryId, page = 1, pageSize = 25 } = {}) {
     try {
       const params = { page, pageSize };
-      if (categoryId) { params.categoryId = categoryId; }
+      if (categoryId) {
+        params.categoryId = categoryId;
+      }
       const response = await api.get('/api/trivia/questions', { params });
       return response.data;
     } catch (error) {
@@ -115,7 +117,9 @@ export function createPrivateApi(config) {
 
   const clearRefreshTimer = (guildId) => {
     const t = refreshTimers.get(guildId);
-    if (t) clearTimeout(t);
+    if (t) {
+      clearTimeout(t);
+    }
     refreshTimers.delete(guildId);
   };
 
@@ -126,10 +130,14 @@ export function createPrivateApi(config) {
 
   const computeExpiresAtMs = (session) => {
     // Prefer explicit expiresAtMs if present
-    if (session?.expiresAtMs && Number.isFinite(session.expiresAtMs)) return session.expiresAtMs;
+    if (session?.expiresAtMs && Number.isFinite(session.expiresAtMs)) {
+      return session.expiresAtMs;
+    }
 
     const ttlSeconds = computeTtlSeconds(session);
-    if (!ttlSeconds) return null;
+    if (!ttlSeconds) {
+      return null;
+    }
 
     const issuedAtMs = Number(session?.issuedAtMs || session?.lastRefreshAtMs || now());
     return issuedAtMs + ttlSeconds * 1000;
@@ -158,9 +166,13 @@ export function createPrivateApi(config) {
 
     // Safety window depends on TTL
     let safetyMs = 60_000; // default 60s
-    if (ttlMs <= 2 * 60_000) safetyMs = Math.floor(ttlMs * 0.4); // refresh around 60% mark
-    else if (ttlMs <= 30 * 60_000) safetyMs = 90_000;           // 90s
-    else safetyMs = 3 * 60_000;                                  // 3 min
+    if (ttlMs <= 2 * 60_000) {
+      safetyMs = Math.floor(ttlMs * 0.4); // refresh around 60% mark
+    } else if (ttlMs <= 30 * 60_000) {
+      safetyMs = 90_000;           // 90s
+    } else {
+      safetyMs = 3 * 60_000;       // 3 min
+    }
 
     // Primary target: before expiry
     const refreshBeforeExpiryAtMs = expiresAtMs - safetyMs - jitterMs;
@@ -184,13 +196,19 @@ export function createPrivateApi(config) {
   const scheduleGuildRefresh = (guildId) => {
     clearRefreshTimer(guildId);
 
-    if (!guildAutoRefresh) return;
+    if (!guildAutoRefresh) {
+      return;
+    }
 
     const session = getGuildSession(guildId);
-    if (!session?.refreshToken) return;
+    if (!session?.refreshToken) {
+      return;
+    }
 
     const delayMs = computeNextRefreshDelayMs(session);
-    if (!delayMs) return;
+    if (!delayMs) {
+      return;
+    }
 
     const timer = setTimeout(() => {
       void ensureFreshGuildSession(guildId, { reason: 'timer' });
@@ -200,7 +218,9 @@ export function createPrivateApi(config) {
   };
 
   const setGuildSession = (guildId, session) => {
-    if (!guildId || !session) return;
+    if (!guildId || !session) {
+      return;
+    }
 
     const ttlSeconds = computeTtlSeconds(session);
     const issuedAtMs = Number(session?.issuedAtMs || now());
@@ -216,7 +236,9 @@ export function createPrivateApi(config) {
 
     // Derive expiresAtMs if possible
     const expiresAtMs = computeExpiresAtMs(normalized);
-    if (expiresAtMs) normalized.expiresAtMs = expiresAtMs;
+    if (expiresAtMs) {
+      normalized.expiresAtMs = expiresAtMs;
+    }
 
     guildSessions.set(guildId, normalized);
 
@@ -240,7 +262,9 @@ export function createPrivateApi(config) {
 
   const buildGuildHeaders = (guildId) => {
     const session = getGuildSession(guildId);
-    if (!session?.accessToken) return {};
+    if (!session?.accessToken) {
+      return {};
+    }
     return { 'X-Guild-Authorization': `Bearer ${session.accessToken}` };
   };
 
@@ -252,7 +276,9 @@ export function createPrivateApi(config) {
    */
   const ensureFreshGuildSession = async (guildId, { reason = 'unknown', force = false } = {}) => {
     const current = getGuildSession(guildId);
-    if (!current?.refreshToken) return null;
+    if (!current?.refreshToken) {
+      return null;
+    }
 
     // If not forced, skip refresh if we still have enough time left
     if (!force) {
@@ -268,7 +294,9 @@ export function createPrivateApi(config) {
     }
 
     // Single-flight refresh
-    if (refreshInflight.has(guildId)) return refreshInflight.get(guildId);
+    if (refreshInflight.has(guildId)) {
+      return refreshInflight.get(guildId);
+    }
 
     const p = (async () => {
       try {
@@ -338,7 +366,9 @@ export function createPrivateApi(config) {
       }
 
       const refreshed = await ensureFreshGuildSession(guildId, { reason: '401', force: true });
-      if (!refreshed?.accessToken) throw error;
+      if (!refreshed?.accessToken) {
+        throw error;
+      }
 
       const retryHeaders = { 'X-Guild-Authorization': `Bearer ${refreshed.accessToken}` };
       return await requestFn(retryHeaders);
@@ -604,8 +634,12 @@ export function createPrivateApi(config) {
         roleId,
         maxRecipients,
       };
-      if (categoryId) { payload.categoryId = categoryId; }
-      if (questionId) { payload.questionId = questionId; }
+      if (categoryId) {
+        payload.categoryId = categoryId;
+      }
+      if (questionId) {
+        payload.questionId = questionId;
+      }
 
       const response = await api.post('/api/airdrop/trivia', payload);
       return response.data;
@@ -762,8 +796,12 @@ export function createPrivateApi(config) {
         roleId,
         maxRecipients,
       };
-      if (categoryId) { payload.categoryId = categoryId; }
-      if (questionId) { payload.questionId = questionId; }
+      if (categoryId) {
+        payload.categoryId = categoryId;
+      }
+      if (questionId) {
+        payload.questionId = questionId;
+      }
 
       const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/trivia`, payload);
       return response.data;
