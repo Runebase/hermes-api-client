@@ -19,7 +19,7 @@ if (!apiUrl || !socketUrl || !apiKey) {
 console.log(`Using API_URL: ${apiUrl}, SOCKET_URL: ${socketUrl}`); // Optional: Log for confirmation
 
 // Parse command-line flags to determine which tests to run
-// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --partydrop --flood --rain --soak --guild-flood --guild-rain --guild-soak --guild-reactdrop --guild-partydrop --sockets --trivia-categories --trivia-questions --trivia-questions-by-id
+// Usage: node test-integration.mjs --wallets --guild-wallets --tip --guild-tip --reactdrop --partydrop --flood --rain --soak --guild-flood --guild-rain --guild-soak --guild-reactdrop --guild-partydrop --sockets --trivia-categories --trivia-questions --trivia-questions-by-id --bulk-payout --get-bulk-payouts --guild-bulk-payout --get-guild-bulk-payouts
 // If no flags are provided, run all tests by default
 const args = process.argv.slice(2);
 const runAll = args.length === 0;
@@ -48,6 +48,10 @@ const runGuildTrivia = runAll || args.includes('--guild-trivia');
 const runSleet = runAll || args.includes('--sleet');
 const runGuildSleet = runAll || args.includes('--guild-sleet');
 const runGuildWave = runAll || args.includes('--guild-wave');
+const runBulkPayout = runAll || args.includes('--bulk-payout');
+const runGetBulkPayouts = runAll || args.includes('--get-bulk-payouts');
+const runGuildBulkPayout = runAll || args.includes('--guild-bulk-payout');
+const runGetGuildBulkPayouts = runAll || args.includes('--get-guild-bulk-payouts');
 
 const guildId = '873322086347702354'; // script kiddies chat
 
@@ -343,7 +347,81 @@ async function runIntegrationTest() {
       console.log('Guild trivia drop result:', guildTriviaResult);
     }
 
+    // ---- Bulk Payout Tests ----
 
+    if (runBulkPayout) {
+      console.log('Creating bulk payout (user-funded)...');
+      const bulkPayoutResult = await client.private.bulkPayout({
+        memo: 'Test bulk payout from API client',
+        notifyChannelId: '1163655822719602688',
+        payouts: [
+          {
+            recipient: '370026641323327491',
+            rewards: [
+              { ticker: 'RUNES', amount: '0.001' },
+            ],
+          },
+          {
+            recipient: '432117250833645570',
+            rewards: [
+              { ticker: 'RUNES', amount: '0.001' },
+            ],
+          },
+        ],
+      });
+      console.log('Bulk payout result:', bulkPayoutResult);
+    }
+
+    if (runGetBulkPayouts) {
+      console.log('Fetching bulk payouts list...');
+      const bulkPayouts = await client.private.getBulkPayouts({ page: 1, limit: 5 });
+      console.log('Bulk payouts:', bulkPayouts);
+
+      // If there are bulk payouts, fetch the first one by ID
+      if (bulkPayouts.bulkPayouts && bulkPayouts.bulkPayouts.length > 0) {
+        const firstId = bulkPayouts.bulkPayouts[0].id;
+        console.log(`Fetching bulk payout by ID: ${firstId}...`);
+        const bulkPayoutDetail = await client.private.getBulkPayoutById(firstId);
+        console.log('Bulk payout detail:', bulkPayoutDetail);
+      }
+    }
+
+    if (runGuildBulkPayout) {
+      console.log('Creating guild bulk payout...');
+      const guildBulkPayoutResult = await client.private.guildBulkPayout(guildId, {
+        memo: 'Test guild bulk payout from API client',
+        notifyChannelId: '1163655822719602688',
+        payouts: [
+          {
+            recipient: '370026641323327491',
+            rewards: [
+              { ticker: 'RUNES', amount: '0.001' },
+            ],
+          },
+          {
+            recipient: '432117250833645570',
+            rewards: [
+              { ticker: 'RUNES', amount: '0.001' },
+            ],
+          },
+        ],
+      });
+      console.log('Guild bulk payout result:', guildBulkPayoutResult);
+    }
+
+    if (runGetGuildBulkPayouts) {
+      console.log('Fetching guild bulk payouts list...');
+      const guildBulkPayouts = await client.private.getGuildBulkPayouts(guildId, { page: 1, limit: 5 });
+      console.log('Guild bulk payouts:', guildBulkPayouts);
+
+      // If there are guild bulk payouts, fetch the first one by ID
+      if (guildBulkPayouts.bulkPayouts && guildBulkPayouts.bulkPayouts.length > 0) {
+        const firstId = guildBulkPayouts.bulkPayouts[0].id;
+        console.log(`Fetching guild bulk payout by ID: ${firstId}...`);
+        const guildBulkPayoutDetail = await client.private.getGuildBulkPayoutById(guildId, firstId);
+        console.log('Guild bulk payout detail:', guildBulkPayoutDetail);
+      }
+    }
 
     let shouldWait = false;
 

@@ -877,6 +877,76 @@ export function createPrivateApi(config) {
     }
   }
 
+  // ---- Bulk Payout Endpoints (User) ----
+
+  async function bulkPayout({ memo, notifyChannelId, payouts }) {
+    try {
+      const response = await api.post('/api/bulk-payout', {
+        memo,
+        notifyChannelId,
+        payouts,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to create bulk payout');
+    }
+  }
+
+  async function getBulkPayouts({ page = 1, limit = 10 } = {}) {
+    try {
+      const response = await api.get('/api/bulk-payout', { params: { page, limit } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch bulk payouts');
+    }
+  }
+
+  async function getBulkPayoutById(id) {
+    try {
+      const response = await api.get(`/api/bulk-payout/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch bulk payout');
+    }
+  }
+
+  // ---- Bulk Payout Endpoints (Guild) ----
+
+  async function guildBulkPayout(guildId, { memo, notifyChannelId, payouts }) {
+    try {
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/bulk-payout`, {
+        memo,
+        notifyChannelId,
+        payouts,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to create guild bulk payout');
+    }
+  }
+
+  async function getGuildBulkPayouts(guildId, { page = 1, limit = 10 } = {}) {
+    try {
+      const response = await guildRequest(guildId, (headers) =>
+        api.get(`/api/guilds/${guildId}/bulk-payouts`, { params: { page, limit }, headers })
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guild bulk payouts');
+    }
+  }
+
+  async function getGuildBulkPayoutById(guildId, id) {
+    try {
+      const response = await guildRequest(guildId, (headers) =>
+        api.get(`/api/guilds/${guildId}/bulk-payouts/${id}`, { headers })
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guild bulk payout');
+    }
+  }
+
   return {
     // regular private
     getWallets,
@@ -890,6 +960,11 @@ export function createPrivateApi(config) {
     sleet,
     wave,
 
+    // bulk payout (user)
+    bulkPayout,
+    getBulkPayouts,
+    getBulkPayoutById,
+
     // guild private
     guildTip,
     guildFlood,
@@ -900,6 +975,11 @@ export function createPrivateApi(config) {
     guildReactdrop,
     guildPartydrop,
     guildTrivia,
+
+    // guild bulk payout
+    guildBulkPayout,
+    getGuildBulkPayouts,
+    getGuildBulkPayoutById,
 
     // guild security
     guildSecurityLogin,
