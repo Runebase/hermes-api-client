@@ -32,7 +32,7 @@ const runRecipientTests = runAll || args.includes('--recipients');
 const runSelfPayoutTests = runAll || args.includes('--self-payout');
 
 const guildId = '873322086347702354'; // Script Kiddies test server
-const testChannelId = '1163655822719602688';
+// const testChannelId = '1163655822719602688';
 const validRecipient1 = '370026641323327491';
 const validRecipient2 = '432117250833645570';
 const initiatorUserId = '217379915803131906'; // The API key owner's user ID
@@ -573,7 +573,7 @@ async function runTests() {
 
         const tolerance = Math.pow(10, -primaryDp);
         if (Math.abs(actualNetChange1 - expectedNetChange) < tolerance) {
-          console.log(`  ✓ Balance math correct`);
+          console.log('  ✓ Balance math correct');
           results.passed++;
         } else {
           console.log(`  ✗ Balance math mismatch! Expected: -${expectedNetChange.toFixed(primaryDp)}, Got: -${actualNetChange1.toFixed(primaryDp)}`);
@@ -616,10 +616,10 @@ async function runTests() {
 
         const tolerance = Math.pow(10, -primaryDp);
         if (Math.abs(selfOnlyNetChange) < tolerance) {
-          console.log(`  ✓ Balance unchanged (debit and credit cancel out)`);
+          console.log('  ✓ Balance unchanged (debit and credit cancel out)');
           results.passed++;
         } else {
-          console.log(`  ✗ Balance changed unexpectedly!`);
+          console.log('  ✗ Balance changed unexpectedly!');
           results.failed++;
           results.errors.push({ testName: 'Self-only net balance = 0', expectedError: '0', actualError: `${selfOnlyNetChange}` });
         }
@@ -627,7 +627,7 @@ async function runTests() {
 
       // ---- Test 3: Multi-coin self-payout ----
       if (testableWallets.length >= 2) {
-        console.log(`\n  === Test 3: Multi-coin self-payout ===`);
+        console.log('\n  === Test 3: Multi-coin self-payout ===');
 
         // Re-fetch fresh wallet balances before this test
         const freshWallets3 = await client.private.getWallets();
@@ -693,10 +693,10 @@ async function runTests() {
           }
 
           if (allCorrect) {
-            console.log(`  ✓ Multi-coin balance math correct for all coins`);
+            console.log('  ✓ Multi-coin balance math correct for all coins');
             results.passed++;
           } else {
-            console.log(`  ✗ Multi-coin balance math mismatch`);
+            console.log('  ✗ Multi-coin balance math mismatch');
             results.failed++;
             results.errors.push({ testName: 'Multi-coin balance math', expectedError: 'All coins correct', actualError: 'Mismatch' });
           }
@@ -704,7 +704,7 @@ async function runTests() {
       }
 
       // ---- Test 4: Edge case - exceed balance by 1 minimal unit (should fail) ----
-      console.log(`\n  === Test 4: Exceed balance by 1 minimal unit (should fail) ===`);
+      console.log('\n  === Test 4: Exceed balance by 1 minimal unit (should fail) ===');
 
       const walletsForEdge = await client.private.getWallets();
       const edgeWallet = walletsForEdge.find(w => w.ticker === primaryTicker);
@@ -730,7 +730,7 @@ async function runTests() {
       );
 
       // ---- Test 5: Edge case - self-payout exceeding balance (should fail) ----
-      console.log(`\n  === Test 5: Self-payout exceeding balance (should fail) ===`);
+      console.log('\n  === Test 5: Self-payout exceeding balance (should fail) ===');
 
       const exceedSelfAmount = (edgeBalance + minUnit).toFixed(edgeDp);
       console.log(`  Attempting self-payout of ${exceedSelfAmount} ${primaryTicker} (exceeds balance)`);
@@ -747,7 +747,7 @@ async function runTests() {
       );
 
       // ---- Test 6: Edge case - exact balance self-payout (should succeed, net = 0) ----
-      console.log(`\n  === Test 6: Exact balance self-payout (should succeed) ===`);
+      console.log('\n  === Test 6: Exact balance self-payout (should succeed) ===');
 
       const walletsForExact = await client.private.getWallets();
       const exactWallet = walletsForExact.find(w => w.ticker === primaryTicker);
@@ -787,10 +787,10 @@ async function runTests() {
 
         const tolerance = Math.pow(10, -edgeDp);
         if (Math.abs(exactNetChange) < tolerance) {
-          console.log(`  ✓ Balance unchanged after exact self-payout`);
+          console.log('  ✓ Balance unchanged after exact self-payout');
           results.passed++;
         } else {
-          console.log(`  ✗ Balance changed unexpectedly after exact self-payout!`);
+          console.log('  ✗ Balance changed unexpectedly after exact self-payout!');
           results.failed++;
           results.errors.push({ testName: 'Exact balance self-payout net = 0', expectedError: '0', actualError: `${exactNetChange}` });
         }
