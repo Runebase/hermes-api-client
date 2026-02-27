@@ -1,4 +1,6 @@
 // src/api.mjs
+import { randomUUID } from 'crypto';
+
 import axios from 'axios';
 
 export function createPublicApi(config) {
@@ -375,8 +377,8 @@ export function createPrivateApi(config) {
     }
   };
 
-  const guildPost = (guildId, url, body) =>
-    guildRequest(guildId, (headers) => api.post(url, body, { headers }));
+  const guildPost = (guildId, url, body, extraHeaders = {}) =>
+    guildRequest(guildId, (headers) => api.post(url, body, { headers: { ...headers, ...extraHeaders } }));
 
   async function guildSecurityLogin(guildId, { password, ttlSeconds, ttlMinutes } = {}) {
     try {
@@ -467,14 +469,15 @@ export function createPrivateApi(config) {
     }
   }
 
-  async function tip({ ticker, recipientIds, amountPerRecipient, notifyChannelId }) {
+  async function tip({ ticker, recipientIds, amountPerRecipient, notifyChannelId, idempotencyKey }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await api.post('/api/tip', {
         ticker,
         recipientIds,
         amountPerRecipient,
         notifyChannelId,
-      });
+      }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to send tip');
@@ -489,9 +492,11 @@ export function createPrivateApi(config) {
     emoji,
     roleId,
     captcha = 'math', // 'math', 'none' or 'trivia'
-    maxRecipients = '2000'
+    maxRecipients = '2000',
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await api.post('/api/airdrop/reactdrop', {
         ticker,
         amount,
@@ -501,7 +506,7 @@ export function createPrivateApi(config) {
         roleId,
         captcha,
         maxRecipients,
-      });
+      }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate reactdrop');
@@ -514,9 +519,11 @@ export function createPrivateApi(config) {
     channelId,
     duration = 300000,
     roleId,
-    maxRecipients = '2000'
+    maxRecipients = '2000',
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await api.post('/api/airdrop/partydrop', {
         ticker,
         amount,
@@ -524,7 +531,7 @@ export function createPrivateApi(config) {
         duration, // duration in milli-seconds
         roleId,
         maxRecipients,
-      });
+      }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate partydrop');
@@ -537,15 +544,17 @@ export function createPrivateApi(config) {
     maxRecipients,
     channelId,
     roleId,
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await api.post('/api/airdrop/flood', {
         ticker,
         amount,
         maxRecipients,
         channelId,
         roleId,
-      });
+      }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate flood');
@@ -558,15 +567,17 @@ export function createPrivateApi(config) {
     maxRecipients,
     channelId,
     roleId,
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await api.post('/api/airdrop/rain', {
         ticker,
         amount,
         maxRecipients,
         channelId,
         roleId,
-      });
+      }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate rain');
@@ -579,15 +590,17 @@ export function createPrivateApi(config) {
     maxRecipients,
     channelId,
     roleId,
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await api.post('/api/airdrop/soak', {
         ticker,
         amount,
         maxRecipients,
         channelId,
         roleId,
-      });
+      }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate soak');
@@ -600,15 +613,17 @@ export function createPrivateApi(config) {
     maxRecipients,
     channelId,
     roleId,
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await api.post('/api/airdrop/wave', {
         ticker,
         amount,
         maxRecipients,
         channelId,
         roleId,
-      });
+      }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate wave');
@@ -624,8 +639,10 @@ export function createPrivateApi(config) {
     categoryId,     // optional UUID
     questionId,     // optional UUID
     maxRecipients = '2000',
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const payload = {
         ticker,
         amount,
@@ -641,7 +658,7 @@ export function createPrivateApi(config) {
         payload.questionId = questionId;
       }
 
-      const response = await api.post('/api/airdrop/trivia', payload);
+      const response = await api.post('/api/airdrop/trivia', payload, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate trivia drop');
@@ -650,14 +667,15 @@ export function createPrivateApi(config) {
 
   // ---- Guild Privileged Endpoints (with X-Guild-Authorization) ----
 
-  async function guildTip(guildId, { ticker, recipientIds, amountPerRecipient, notifyChannelId }) {
+  async function guildTip(guildId, { ticker, recipientIds, amountPerRecipient, notifyChannelId, idempotencyKey }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await guildPost(guildId, `/api/guilds/${guildId}/tip`, {
         ticker,
         recipientIds,
         amountPerRecipient,
         notifyChannelId,
-      });
+      }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to send guild tip');
@@ -670,15 +688,17 @@ export function createPrivateApi(config) {
     maxRecipients,
     channelId,
     roleId,
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/flood`, {
         ticker,
         amount,
         maxRecipients,
         channelId,
         roleId,
-      });
+      }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate guild flood');
@@ -691,15 +711,17 @@ export function createPrivateApi(config) {
     maxRecipients,
     channelId,
     roleId,
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/rain`, {
         ticker,
         amount,
         maxRecipients,
         channelId,
         roleId,
-      });
+      }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate guild rain');
@@ -712,15 +734,17 @@ export function createPrivateApi(config) {
     maxRecipients,
     channelId,
     roleId,
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/soak`, {
         ticker,
         amount,
         maxRecipients,
         channelId,
         roleId,
-      });
+      }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate guild soak');
@@ -736,8 +760,10 @@ export function createPrivateApi(config) {
     roleId,
     captcha = 'math', // 'math', 'none' or 'trivia'
     maxRecipients = '2000',
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/reactdrop`, {
         ticker,
         amount,
@@ -747,7 +773,7 @@ export function createPrivateApi(config) {
         roleId,
         captcha,
         maxRecipients,
-      });
+      }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate guild reactdrop');
@@ -761,8 +787,10 @@ export function createPrivateApi(config) {
     duration = 300000,
     roleId,
     maxRecipients = '2000',
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/partydrop`, {
         ticker,
         amount,
@@ -770,7 +798,7 @@ export function createPrivateApi(config) {
         duration, // duration in milli-seconds
         roleId,
         maxRecipients,
-      });
+      }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate guild partydrop');
@@ -786,8 +814,10 @@ export function createPrivateApi(config) {
     categoryId,
     questionId,
     maxRecipients = '2000',
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const payload = {
         ticker,
         amount,
@@ -803,7 +833,7 @@ export function createPrivateApi(config) {
         payload.questionId = questionId;
       }
 
-      const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/trivia`, payload);
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/trivia`, payload, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate guild trivia drop');
@@ -816,15 +846,17 @@ export function createPrivateApi(config) {
     maxRecipients,
     channelId,
     roleId,
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/wave`, {
         ticker,
         amount,
         maxRecipients,
         channelId,
         roleId,
-      });
+      }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate guild wave');
@@ -838,8 +870,10 @@ export function createPrivateApi(config) {
     roleId,
     maxRecipients = 400,
     duration = 900000, // 15 minutes default (matches backend)
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await api.post('/api/airdrop/sleet', {
         ticker,
         amount,
@@ -847,7 +881,7 @@ export function createPrivateApi(config) {
         roleId,
         maxRecipients,
         duration,
-      });
+      }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate sleet');
@@ -861,8 +895,10 @@ export function createPrivateApi(config) {
     roleId,
     maxRecipients = 400,
     duration = 900000,
+    idempotencyKey,
   }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/sleet`, {
         ticker,
         amount,
@@ -870,7 +906,7 @@ export function createPrivateApi(config) {
         roleId,
         maxRecipients: String(maxRecipients),
         duration,
-      });
+      }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to initiate guild sleet');
@@ -879,13 +915,14 @@ export function createPrivateApi(config) {
 
   // ---- Bulk Payout Endpoints (User) ----
 
-  async function bulkPayout({ memo, notifyChannelId, payouts }) {
+  async function bulkPayout({ memo, notifyChannelId, payouts, idempotencyKey }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await api.post('/api/bulk-payout', {
         memo,
         notifyChannelId,
         payouts,
-      });
+      }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to create bulk payout');
@@ -912,13 +949,14 @@ export function createPrivateApi(config) {
 
   // ---- Bulk Payout Endpoints (Guild) ----
 
-  async function guildBulkPayout(guildId, { memo, notifyChannelId, payouts }) {
+  async function guildBulkPayout(guildId, { memo, notifyChannelId, payouts, idempotencyKey }) {
     try {
+      const key = idempotencyKey || randomUUID();
       const response = await guildPost(guildId, `/api/guilds/${guildId}/bulk-payout`, {
         memo,
         notifyChannelId,
         payouts,
-      });
+      }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to create guild bulk payout');
