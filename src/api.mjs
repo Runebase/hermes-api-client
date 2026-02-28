@@ -81,6 +81,162 @@ export function createPublicApi(config) {
     }
   }
 
+  async function getChains() {
+    try {
+      const response = await api.get('/api/chains');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch chains');
+    }
+  }
+
+  async function getChainByName(name) {
+    try {
+      const response = await api.get(`/api/chains/${encodeURIComponent(name)}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch chain');
+    }
+  }
+
+  async function getGuilds({ orderBy, orderDir, limit, offset, search } = {}) {
+    try {
+      const params = {};
+      if (orderBy) { params.orderBy = orderBy; }
+      if (orderDir) { params.orderDir = orderDir; }
+      if (limit !== undefined) { params.limit = limit; }
+      if (offset !== undefined) { params.offset = offset; }
+      if (search) { params.search = search; }
+      const response = await api.get('/api/guilds', { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guilds');
+    }
+  }
+
+  async function getGuildDetails(guildId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/details`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guild details');
+    }
+  }
+
+  async function getOperationById(id) {
+    try {
+      const response = await api.get(`/api/operations/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch operation');
+    }
+  }
+
+  async function getGiftByCode(code) {
+    try {
+      const response = await api.get(`/api/gift/${encodeURIComponent(code)}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch gift');
+    }
+  }
+
+  async function getStats() {
+    try {
+      const response = await api.get('/api/stats');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch stats');
+    }
+  }
+
+  async function getGuildReviews(guildId, { page = 1, pageSize = 25 } = {}) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/reviews`, { params: { page, pageSize } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guild reviews');
+    }
+  }
+
+  async function getGuildFaucets(guildId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/faucets`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guild faucets');
+    }
+  }
+
+  async function getGuildMembers(guildId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/members`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guild members');
+    }
+  }
+
+  async function getGuildOperations(guildId, { page = 1, limit = 10 } = {}) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/operations`, { params: { page, limit } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guild operations');
+    }
+  }
+
+  async function getGuildRewards(guildId, rewardType) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/rewards/${rewardType}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guild rewards');
+    }
+  }
+
+  async function getGuildSchedules(guildId, { limit = 100, offset = 0, active } = {}) {
+    try {
+      const params = { limit, offset };
+      if (active !== undefined) { params.active = active; }
+      const response = await api.get(`/api/guilds/${guildId}/schedules`, { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch guild schedules');
+    }
+  }
+
+  async function getTriviaTicketsPending({ page = 1, pageSize = 25, type } = {}) {
+    try {
+      const params = { page, pageSize };
+      if (type) { params.type = type; }
+      const response = await api.get('/api/trivia/tickets/pending', { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch pending tickets');
+    }
+  }
+
+  async function getTriviaTicketsResolved({ page = 1, pageSize = 25, type } = {}) {
+    try {
+      const params = { page, pageSize };
+      if (type) { params.type = type; }
+      const response = await api.get('/api/trivia/tickets/resolved', { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch resolved tickets');
+    }
+  }
+
+  async function getTriviaTicketById(id) {
+    try {
+      const response = await api.get(`/api/trivia/tickets/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch ticket');
+    }
+  }
+
   return {
     health,
     getOperations,
@@ -89,6 +245,22 @@ export function createPublicApi(config) {
     getTriviaCategories,
     getTriviaQuestions,
     getTriviaQuestionById,
+    getChains,
+    getChainByName,
+    getGuilds,
+    getGuildDetails,
+    getOperationById,
+    getGiftByCode,
+    getStats,
+    getGuildReviews,
+    getGuildFaucets,
+    getGuildMembers,
+    getGuildOperations,
+    getGuildRewards,
+    getGuildSchedules,
+    getTriviaTicketsPending,
+    getTriviaTicketsResolved,
+    getTriviaTicketById,
   };
 }
 
@@ -380,6 +552,15 @@ export function createPrivateApi(config) {
   const guildPost = (guildId, url, body, extraHeaders = {}) =>
     guildRequest(guildId, (headers) => api.post(url, body, { headers: { ...headers, ...extraHeaders } }));
 
+  const guildGet = (guildId, url, params = {}) =>
+    guildRequest(guildId, (headers) => api.get(url, { params, headers }));
+
+  const guildPatch = (guildId, url, body) =>
+    guildRequest(guildId, (headers) => api.patch(url, body, { headers }));
+
+  const guildDeleteReq = (guildId, url) =>
+    guildRequest(guildId, (headers) => api.delete(url, { headers }));
+
   async function guildSecurityLogin(guildId, { password, ttlSeconds, ttlMinutes } = {}) {
     try {
       const response = await api.post(`/api/guilds/${guildId}/security/login`, {
@@ -462,10 +643,228 @@ export function createPrivateApi(config) {
 
   async function getWallets() {
     try {
-      const response = await api.get('/api/wallets'); // Prefix if needed
+      const response = await api.get('/api/wallets');
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'Failed to fetch wallets');
+    }
+  }
+
+  async function getDepositAddress(chainName) {
+    try {
+      const response = await api.get(`/api/wallets/deposit-address/${encodeURIComponent(chainName)}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch deposit address');
+    }
+  }
+
+  async function withdraw({ ticker, chainName, amount, address, memo, idempotencyKey }) {
+    try {
+      const key = idempotencyKey || randomUUID();
+      const response = await api.post('/api/wallets/withdraw', {
+        ticker,
+        chainName,
+        amount,
+        address,
+        memo,
+      }, { headers: { 'X-Idempotency-Key': key } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to create withdrawal');
+    }
+  }
+
+  async function getUser() {
+    try {
+      const response = await api.get('/api/auth/user');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch user');
+    }
+  }
+
+  async function updateUser({ publicProfile, publicWallet, publicOperations, publicTransactions }) {
+    try {
+      const response = await api.patch('/api/auth/user', {
+        publicProfile,
+        publicWallet,
+        publicOperations,
+        publicTransactions,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to update user');
+    }
+  }
+
+  async function getUserGuilds() {
+    try {
+      const response = await api.get('/api/guilds/user');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch user guilds');
+    }
+  }
+
+  async function getGifts({ page = 1, limit = 10, status = 'all' } = {}) {
+    try {
+      const response = await api.get('/api/gift', { params: { page, limit, status } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch gifts');
+    }
+  }
+
+  async function createGift({ giftType, coinTicker, amountPerClaim, itemId, maxClaims, targetType, expiresInDays, message, idempotencyKey }) {
+    try {
+      const key = idempotencyKey || randomUUID();
+      const body = { giftType, coinTicker, maxClaims };
+      if (amountPerClaim !== undefined) { body.amountPerClaim = amountPerClaim; }
+      if (itemId !== undefined) { body.itemId = itemId; }
+      if (targetType) { body.targetType = targetType; }
+      if (expiresInDays !== undefined) { body.expiresInDays = expiresInDays; }
+      if (message) { body.message = message; }
+      const response = await api.post('/api/gift', body, { headers: { 'X-Idempotency-Key': key } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to create gift');
+    }
+  }
+
+  async function claimGift(code, { guildId, idempotencyKey } = {}) {
+    try {
+      const key = idempotencyKey || randomUUID();
+      const body = {};
+      if (guildId) { body.guildId = guildId; }
+      const response = await api.post(`/api/gift/${encodeURIComponent(code)}/claim`, body, { headers: { 'X-Idempotency-Key': key } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to claim gift');
+    }
+  }
+
+  async function cancelGift(code, { idempotencyKey } = {}) {
+    try {
+      const key = idempotencyKey || randomUUID();
+      const response = await api.delete(`/api/gift/${encodeURIComponent(code)}`, { headers: { 'X-Idempotency-Key': key } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to cancel gift');
+    }
+  }
+
+  async function purchaseItem({ itemId, guildId, coinTickerToBoost, idempotencyKey }) {
+    try {
+      const key = idempotencyKey || randomUUID();
+      const body = { itemId };
+      if (guildId) { body.guildId = guildId; }
+      if (coinTickerToBoost) { body.coinTickerToBoost = coinTickerToBoost; }
+      const response = await api.post('/api/store/purchase', body, { headers: { 'X-Idempotency-Key': key } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to purchase item');
+    }
+  }
+
+  // ---- Trivia Submission / Curation Endpoints ----
+
+  async function submitTriviaQuestion({ categoryId, question, options, correctAnswerIndex, difficulty, explanation }) {
+    try {
+      const body = { categoryId, question, options, correctAnswerIndex };
+      if (difficulty) { body.difficulty = difficulty; }
+      if (explanation) { body.explanation = explanation; }
+      const response = await api.post('/api/trivia/submit-question', body);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to submit trivia question');
+    }
+  }
+
+  async function submitTriviaCategory({ name, description, emoji }) {
+    try {
+      const body = { name };
+      if (description) { body.description = description; }
+      if (emoji) { body.emoji = emoji; }
+      const response = await api.post('/api/trivia/submit-category', body);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to submit trivia category');
+    }
+  }
+
+  async function reportTriviaQuestion(id, { type, reason, proposedContent } = {}) {
+    try {
+      const body = { type };
+      if (reason) { body.reason = reason; }
+      if (proposedContent) { body.proposedContent = proposedContent; }
+      const response = await api.post(`/api/trivia/questions/${id}/report`, body);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to report trivia question');
+    }
+  }
+
+  async function getTriviaTicketsUser({ page = 1, pageSize = 25, state = 'all' } = {}) {
+    try {
+      const response = await api.get('/api/trivia/tickets/user', { params: { page, pageSize, state } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch user tickets');
+    }
+  }
+
+  async function voteTriviaTicket(ticketId, { voteType }) {
+    try {
+      const response = await api.post(`/api/trivia/tickets/${ticketId}/vote`, { voteType });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to vote on ticket');
+    }
+  }
+
+  async function reactivateTriviaQuestion(id) {
+    try {
+      const response = await api.post(`/api/trivia/questions/${id}/reactivate`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to reactivate trivia question');
+    }
+  }
+
+  async function getTriviaTrashedQuestions() {
+    try {
+      const response = await api.get('/api/trivia/trash');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch trashed questions');
+    }
+  }
+
+  async function isFactChecker() {
+    try {
+      const response = await api.get('/api/trivia/is-fact-checker');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to check fact checker status');
+    }
+  }
+
+  async function requestTriviaTokens() {
+    try {
+      const response = await api.post('/api/trivia/request-tokens');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to request trivia tokens');
+    }
+  }
+
+  async function getTriviaTokens() {
+    try {
+      const response = await api.get('/api/trivia/tokens');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch trivia tokens');
     }
   }
 
@@ -985,9 +1384,368 @@ export function createPrivateApi(config) {
     }
   }
 
+  // ---- Guild Non-Privileged Endpoints (auth only, no guild security needed) ----
+
+  async function guildDonation(guildId, { ticker, amount, idempotencyKey }) {
+    try {
+      const key = idempotencyKey || randomUUID();
+      const response = await api.post(`/api/guilds/${guildId}/donation`, {
+        ticker,
+        amount,
+      }, { headers: { 'X-Idempotency-Key': key } });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to process donation');
+    }
+  }
+
+  async function getGuildInviteHermes(guildId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/invite-hermes`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch invite link');
+    }
+  }
+
+  async function getUserGuildRoles(guildId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/user-roles`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch user guild roles');
+    }
+  }
+
+  async function claimGuildFaucet(guildId, faucetId) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/faucets/${faucetId}/claim`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to claim faucet');
+    }
+  }
+
+  async function getGuildVoteHistory(guildId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/vote/history`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch vote history');
+    }
+  }
+
+  async function getGuildBumpHistory(guildId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/bump/history`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch bump history');
+    }
+  }
+
+  async function getGuildSchedule(guildId, scheduleId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/schedules/${scheduleId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch schedule');
+    }
+  }
+
+  // ---- Guild Security Management ----
+
+  async function getGuildSecurityStatus(guildId) {
+    try {
+      const response = await api.get(`/api/guilds/${guildId}/security/status`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch security status');
+    }
+  }
+
+  async function guildSecurityClaim(guildId, { email, password }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/security/claim`, { email, password });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to claim guild security');
+    }
+  }
+
+  async function guildSecurityPassword(guildId, { currentPassword, newPassword }) {
+    try {
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/security/password`, {
+        currentPassword,
+        newPassword,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to update password');
+    }
+  }
+
+  async function guildSecurityEmail(guildId, { email }) {
+    try {
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/security/email`, { email });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to update email');
+    }
+  }
+
+  async function guildSecurityEmailVerify(guildId, { token }) {
+    try {
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/security/email/verify`, { token });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to verify email');
+    }
+  }
+
+  async function getGuildSecurityOperators(guildId) {
+    try {
+      const response = await guildGet(guildId, `/api/guilds/${guildId}/security/operators`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch operators');
+    }
+  }
+
+  async function addGuildSecurityOperator(guildId, { userId, password, role }) {
+    try {
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/security/operators`, {
+        userId,
+        password,
+        role,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to add operator');
+    }
+  }
+
+  async function removeGuildSecurityOperator(guildId, userId) {
+    try {
+      const response = await guildDeleteReq(guildId, `/api/guilds/${guildId}/security/operators/${userId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to remove operator');
+    }
+  }
+
+  async function getGuildSecurityRoles(guildId) {
+    try {
+      const response = await guildGet(guildId, `/api/guilds/${guildId}/security/roles`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to fetch security roles');
+    }
+  }
+
+  async function addGuildSecurityRole(guildId, { roleId }) {
+    try {
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/security/roles`, { roleId });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to add security role');
+    }
+  }
+
+  async function removeGuildSecurityRole(guildId, roleId) {
+    try {
+      const response = await guildDeleteReq(guildId, `/api/guilds/${guildId}/security/roles/${roleId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to remove security role');
+    }
+  }
+
+  async function guildSecurityResetRequest(guildId, { email }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/security/reset/request`, { email });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to request password reset');
+    }
+  }
+
+  async function guildSecurityResetConfirm(guildId, { token, newPassword }) {
+    try {
+      const response = await api.post(`/api/guilds/${guildId}/security/reset/confirm`, { token, newPassword });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to confirm password reset');
+    }
+  }
+
+  // ---- Guild Settings (Privileged) ----
+
+  async function updateGuildSettings(guildId, { publicOperations }) {
+    try {
+      const response = await guildPatch(guildId, `/api/guilds/${guildId}/settings`, { publicOperations });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to update guild settings');
+    }
+  }
+
+  async function updateGuildFaucetNotifyChannel(guildId, { channelId }) {
+    try {
+      const response = await guildPatch(guildId, `/api/guilds/${guildId}/settings/faucet-notify-channel`, { channelId });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to update faucet notify channel');
+    }
+  }
+
+  // ---- Guild Faucets (Privileged) ----
+
+  async function createGuildFaucet(guildId, { ticker, roleId, claimInterval, type, value, title }) {
+    try {
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/faucets`, {
+        ticker,
+        roleId,
+        claimInterval,
+        type,
+        value,
+        title,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to create faucet');
+    }
+  }
+
+  async function deleteGuildFaucet(guildId, faucetId) {
+    try {
+      const response = await guildDeleteReq(guildId, `/api/guilds/${guildId}/faucets/${faucetId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to delete faucet');
+    }
+  }
+
+  // ---- Guild Rewards (Privileged) ----
+
+  async function createGuildReward(guildId, rewardType, { ticker, amountType, amount }) {
+    try {
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/rewards/${rewardType}`, {
+        ticker,
+        amountType,
+        amount,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to create reward');
+    }
+  }
+
+  async function updateGuildReward(guildId, rewardType, ticker, { amountType, amount, status }) {
+    try {
+      const body = {};
+      if (amountType) { body.amountType = amountType; }
+      if (amount) { body.amount = amount; }
+      if (status) { body.status = status; }
+      const response = await guildPatch(guildId, `/api/guilds/${guildId}/rewards/${rewardType}/${ticker}`, body);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to update reward');
+    }
+  }
+
+  // ---- Guild Schedules (Privileged) ----
+
+  async function createGuildSchedule(guildId, {
+    ticker,
+    operationType,
+    channelId,
+    amount,
+    amountType,
+    scheduleType,
+    cronExpression,
+    runAt,
+    roleId,
+    maxRecipients,
+    metadata,
+    isPublic,
+  }) {
+    try {
+      const body = { ticker, operationType, channelId, amount, scheduleType };
+      if (amountType) { body.amountType = amountType; }
+      if (cronExpression) { body.cronExpression = cronExpression; }
+      if (runAt) { body.runAt = runAt; }
+      if (roleId) { body.roleId = roleId; }
+      if (maxRecipients !== undefined) { body.maxRecipients = maxRecipients; }
+      if (metadata) { body.metadata = metadata; }
+      if (isPublic !== undefined) { body.public = isPublic; }
+      const response = await guildPost(guildId, `/api/guilds/${guildId}/schedules`, body);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to create schedule');
+    }
+  }
+
+  async function updateGuildSchedule(guildId, scheduleId, {
+    ticker,
+    operationType,
+    channelId,
+    amount,
+    amountType,
+    scheduleType,
+    cronExpression,
+    runAt,
+    roleId,
+    active,
+    maxRecipients,
+    metadata,
+    isPublic,
+  } = {}) {
+    try {
+      const body = {};
+      if (ticker) { body.ticker = ticker; }
+      if (operationType) { body.operationType = operationType; }
+      if (channelId) { body.channelId = channelId; }
+      if (amount) { body.amount = amount; }
+      if (amountType) { body.amountType = amountType; }
+      if (scheduleType) { body.scheduleType = scheduleType; }
+      if (cronExpression) { body.cronExpression = cronExpression; }
+      if (runAt) { body.runAt = runAt; }
+      if (roleId) { body.roleId = roleId; }
+      if (active !== undefined) { body.active = active; }
+      if (maxRecipients !== undefined) { body.maxRecipients = maxRecipients; }
+      if (metadata) { body.metadata = metadata; }
+      if (isPublic !== undefined) { body.public = isPublic; }
+      const response = await guildRequest(guildId, (headers) =>
+        api.put(`/api/guilds/${guildId}/schedules/${scheduleId}`, body, { headers })
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to update schedule');
+    }
+  }
+
+  async function deleteGuildSchedule(guildId, scheduleId) {
+    try {
+      const response = await guildDeleteReq(guildId, `/api/guilds/${guildId}/schedules/${scheduleId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || 'Failed to delete schedule');
+    }
+  }
+
   return {
-    // regular private
+    // user / auth
+    getUser,
+    updateUser,
+    getUserGuilds,
+
+    // wallets
     getWallets,
+    getDepositAddress,
+    withdraw,
+
+    // tips & airdrops (user)
     tip,
     reactdrop,
     trivia,
@@ -998,12 +1756,42 @@ export function createPrivateApi(config) {
     sleet,
     wave,
 
+    // gifts
+    getGifts,
+    createGift,
+    claimGift,
+    cancelGift,
+
+    // store
+    purchaseItem,
+
     // bulk payout (user)
     bulkPayout,
     getBulkPayouts,
     getBulkPayoutById,
 
-    // guild private
+    // trivia submission / curation
+    submitTriviaQuestion,
+    submitTriviaCategory,
+    reportTriviaQuestion,
+    getTriviaTicketsUser,
+    voteTriviaTicket,
+    reactivateTriviaQuestion,
+    getTriviaTrashedQuestions,
+    isFactChecker,
+    requestTriviaTokens,
+    getTriviaTokens,
+
+    // guild non-privileged (auth only)
+    guildDonation,
+    getGuildInviteHermes,
+    getUserGuildRoles,
+    claimGuildFaucet,
+    getGuildVoteHistory,
+    getGuildBumpHistory,
+    getGuildSchedule,
+
+    // guild tips & airdrops (privileged)
     guildTip,
     guildFlood,
     guildRain,
@@ -1014,17 +1802,49 @@ export function createPrivateApi(config) {
     guildPartydrop,
     guildTrivia,
 
-    // guild bulk payout
+    // guild bulk payout (privileged)
     guildBulkPayout,
     getGuildBulkPayouts,
     getGuildBulkPayoutById,
 
-    // guild security
+    // guild security session
     guildSecurityLogin,
     guildSecurityRefresh,
     guildSecurityLogout,
 
-    // optional helpers
+    // guild security management
+    getGuildSecurityStatus,
+    guildSecurityClaim,
+    guildSecurityPassword,
+    guildSecurityEmail,
+    guildSecurityEmailVerify,
+    getGuildSecurityOperators,
+    addGuildSecurityOperator,
+    removeGuildSecurityOperator,
+    getGuildSecurityRoles,
+    addGuildSecurityRole,
+    removeGuildSecurityRole,
+    guildSecurityResetRequest,
+    guildSecurityResetConfirm,
+
+    // guild settings (privileged)
+    updateGuildSettings,
+    updateGuildFaucetNotifyChannel,
+
+    // guild faucets (privileged)
+    createGuildFaucet,
+    deleteGuildFaucet,
+
+    // guild rewards (privileged)
+    createGuildReward,
+    updateGuildReward,
+
+    // guild schedules (privileged)
+    createGuildSchedule,
+    updateGuildSchedule,
+    deleteGuildSchedule,
+
+    // auto-refresh helpers
     guildSecurityStartAutoRefresh,
     guildSecurityStopAutoRefresh,
     guildSecurityWarmup,
