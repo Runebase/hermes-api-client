@@ -24,17 +24,17 @@
   },
   "homepage": "https://github.com/Runebase/hermes-api-client#readme",
   "dependencies": {
-    "axios": "^1.13.4",
-    "bignumber.js": "^9.3.1",
+    "axios": "^1.13.6",
+    "bignumber.js": "^10.0.2",
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
-    "dotenv": "^17.2.4",
+    "dotenv": "^17.3.1",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-n": "^17.23.2",
+    "eslint-plugin-n": "^17.24.0",
     "eslint-plugin-promise": "^7.2.1",
-    "globals": "^17.3.0",
+    "globals": "^17.4.0",
     "jest": "^30.2.0",
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.14"
   }
 }
