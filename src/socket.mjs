@@ -15,9 +15,11 @@ export function createSocket(config) {
   });
 
   const errorCount = { count: 0 };
+  let disconnectedAt = null;
 
   socket.on('connect', () => {
     console.log(`${tag} connected (id: ${socket.id})`);
+    disconnectedAt = null;
     socket.emit('joinPrivate');
     for (const guildId of joinedGuilds) {
       socket.emit('joinGuild', { guildId });
@@ -39,6 +41,7 @@ export function createSocket(config) {
   });
 
   socket.on('disconnect', (reason) => {
+    disconnectedAt = Date.now();
     console.log(`${tag} disconnected: ${reason}`);
   });
 
@@ -75,6 +78,14 @@ export function createSocket(config) {
 
   return {
     socket,
+
+    get connected() {
+      return socket.connected;
+    },
+
+    get disconnectedAt() {
+      return disconnectedAt;
+    },
 
     joinGuild(guildId) {
       joinedGuilds.add(guildId);
