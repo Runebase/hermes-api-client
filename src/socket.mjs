@@ -2,6 +2,8 @@
 import { io } from 'socket.io-client';
 
 export function createSocket(config) {
+  const joinedGuilds = new Set();
+
   const socket = io(config.socketUrl, {
     auth: { authorization: `Bearer ${config.apiKey}` },
     transports: ['websocket'],
@@ -11,10 +13,14 @@ export function createSocket(config) {
     reconnectionDelayMax: 5000,
   });
 
-  const errorCount = { count: 0 }; // Track connection errors
+  const errorCount = { count: 0 };
 
   socket.on('connect', () => {
     socket.emit('joinPrivate');
+    // Re-join guild rooms after reconnect
+    for (const guildId of joinedGuilds) {
+      socket.emit('joinGuild', { guildId });
+    }
     errorCount.count = 0;
   });
 
@@ -25,6 +31,9 @@ export function createSocket(config) {
 
   socket.on('reconnect', () => {
     socket.emit('joinPrivate');
+    for (const guildId of joinedGuilds) {
+      socket.emit('joinGuild', { guildId });
+    }
   });
 
   socket.on('disconnect', (reason) => {
@@ -58,12 +67,40 @@ export function createSocket(config) {
     clearInterval(heartbeatInterval);
   });
 
-  socket.on('connect', () => {
-  });
-
   socket.on('error', (err) => {
     console.log('Socket error:', err.message);
   });
 
-  return { socket };
+  return {
+    socket,
+
+    joinGuild(guildId) {
+      joinedGuilds.add(guildId);
+      if (socket.connected) {
+        socket.emit('joinGuild', { guildId });
+      }
+    },
+
+    leaveGuild(guildId) {
+      joinedGuilds.delete(guildId);
+      if (socket.connected) {
+        socket.emit('leaveGuild', { guildId });
+      }
+    },
+
+    on(event, callback) {
+      socket.on(event, callback);
+      return () => socket.off(event, callback);
+    },
+
+    off(event, callback) {
+      socket.off(event, callback);
+    },
+
+    disconnect() {
+      joinedGuilds.clear();
+      clearInterval(heartbeatInterval);
+      socket.disconnect();
+    },
+  };
 }
