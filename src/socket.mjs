@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 
 export function createSocket(config) {
   const joinedGuilds = new Set();
+  const tag = `[hermes-socket ${config.socketUrl}]`;
 
   const socket = io(config.socketUrl, {
     auth: { authorization: `Bearer ${config.apiKey}` },
@@ -16,8 +17,8 @@ export function createSocket(config) {
   const errorCount = { count: 0 };
 
   socket.on('connect', () => {
+    console.log(`${tag} connected (id: ${socket.id})`);
     socket.emit('joinPrivate');
-    // Re-join guild rooms after reconnect
     for (const guildId of joinedGuilds) {
       socket.emit('joinGuild', { guildId });
     }
@@ -25,11 +26,12 @@ export function createSocket(config) {
   });
 
   socket.on('connect_error', (err) => {
-    console.log('Socket connect error:', err.message);
     errorCount.count += 1;
+    console.log(`${tag} connect_error (#${errorCount.count}): ${err.message}`);
   });
 
   socket.on('reconnect', () => {
+    console.log(`${tag} reconnected (id: ${socket.id})`);
     socket.emit('joinPrivate');
     for (const guildId of joinedGuilds) {
       socket.emit('joinGuild', { guildId });
@@ -37,24 +39,24 @@ export function createSocket(config) {
   });
 
   socket.on('disconnect', (reason) => {
-    console.log('Disconnected from Socket.IO server:', reason);
+    console.log(`${tag} disconnected: ${reason}`);
   });
 
   socket.on('reconnect_attempt', (attempt) => {
-    console.log(`Reconnect attempt #${attempt}`);
+    console.log(`${tag} reconnect attempt #${attempt}`);
   });
 
   socket.on('reconnect_error', (err) => {
-    console.log('Reconnect error:', err.message);
     errorCount.count += 1;
+    console.log(`${tag} reconnect_error (#${errorCount.count}): ${err.message}`);
   });
 
   socket.on('wallets_updated', (wallets) => {
-    console.log('Received wallets_updated:', wallets);
+    console.log(`${tag} wallets_updated:`, wallets);
   });
 
   socket.on('pong', () => {
-    console.log('Received pong from server');
+    console.log(`${tag} pong`);
   });
 
   const heartbeatInterval = setInterval(() => {
@@ -68,7 +70,7 @@ export function createSocket(config) {
   });
 
   socket.on('error', (err) => {
-    console.log('Socket error:', err.message);
+    console.log(`${tag} error: ${err.message}`);
   });
 
   return {
