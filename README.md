@@ -47,6 +47,10 @@ const client = createHermesClient({
     onSessionUpdate: (guildId, session) => { // Callback on session changes (optional)
       // Persist session to disk/DB for recovery
     },
+    onRefreshError: (guildId, err, { reason }) => { // A background refresh failed (optional; since 0.3.3)
+      // The refresh timer and its backoff retries run unawaited: their failures
+      // come here instead of as unhandled rejections. A backoff retry is already scheduled.
+    },
   },
 });
 ```

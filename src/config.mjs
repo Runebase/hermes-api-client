@@ -9,6 +9,7 @@ export function createConfig(options = {}) {
       autoRefresh: options.guildSecurity?.autoRefresh !== false,
       defaultTtlSeconds: options.guildSecurity?.defaultTtlSeconds || null,
       onSessionUpdate: options.guildSecurity?.onSessionUpdate || null,
+      onRefreshError: options.guildSecurity?.onRefreshError || null,
     },
   };
 }

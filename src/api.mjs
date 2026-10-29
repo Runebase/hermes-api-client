@@ -279,6 +279,7 @@ export function createPrivateApi(config) {
   const guildAutoRefresh = config.guildSecurity?.autoRefresh !== false;
   const defaultGuildTtlSeconds = config.guildSecurity?.defaultTtlSeconds || null;
   const onGuildSessionUpdate = config.guildSecurity?.onSessionUpdate || null;
+  const onGuildRefreshError = config.guildSecurity?.onRefreshError || null;
 
   // Timers & single-flight refresh protection
   const refreshTimers = new Map();       // guildId -> Timeout
@@ -385,7 +386,7 @@ export function createPrivateApi(config) {
     }
 
     const timer = setTimeout(() => {
-      void ensureFreshGuildSession(guildId, { reason: 'timer' });
+      refreshInBackground(guildId, 'timer');
     }, delayMs);
 
     refreshTimers.set(guildId, timer);
@@ -448,6 +449,25 @@ export function createPrivateApi(config) {
    * - Otherwise refresh (single-flight).
    * - On refresh fail, schedule backoff retry (soft), but do not spam.
    */
+  // A refresh started in the background (the refresh timer, a backoff retry):
+  // nobody awaits it, so its failure (already followed by a backoff retry
+  // when autoRefresh is on) is caught here and reported through
+  // guildSecurity.onRefreshError, never left as an unhandled rejection.
+  // Callers that await ensureFreshGuildSession (warmup, a 401 retry) still
+  // get the error.
+  const refreshInBackground = (guildId, reason) => {
+    ensureFreshGuildSession(guildId, { reason }).catch((err) => {
+      if (!onGuildRefreshError) {
+        return;
+      }
+      try {
+        onGuildRefreshError(guildId, err, { reason });
+      } catch {
+        // A reporter that throws must not become the unhandled rejection.
+      }
+    });
+  };
+
   const ensureFreshGuildSession = async (guildId, { reason = 'unknown', force = false } = {}) => {
     const current = getGuildSession(guildId);
     if (!current?.refreshToken) {
@@ -506,7 +526,7 @@ export function createPrivateApi(config) {
 
           clearRefreshTimer(guildId);
           const t = setTimeout(() => {
-            void ensureFreshGuildSession(guildId, { reason: `backoff:${reason}` });
+            refreshInBackground(guildId, `backoff:${reason}`);
           }, prev.nextDelayMs + Math.floor(Math.random() * 5_000)); // add small jitter
           refreshTimers.set(guildId, t);
         }
