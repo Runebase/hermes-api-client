@@ -40,6 +40,7 @@ const client = createHermesClient({
   apiUrl: 'https://your-hermes-api.com',   // API base URL (default: process.env.API_URL)
   socketUrl: 'https://your-hermes-api.com', // Socket.IO URL (default: process.env.SOCKET_URL)
   apiKey: 'YOUR_API_KEY',                   // API key (default: process.env.API_KEY)
+  timeout: 150000,                         // Give up on a call after this many ms (optional; since 0.3.4; default 0: never)
   guildSecurity: {
     autoRefresh: true,                      // Auto-refresh guild sessions before expiry (default: true)
     defaultTtlSeconds: 1800,                // Default session TTL (optional)
@@ -704,7 +705,7 @@ const client = createHermesClient({
 
 All financial operations (tips, airdrops, withdrawals, gifts, purchases, donations, bulk payouts) support idempotency via the `X-Idempotency-Key` header. If you omit the `idempotencyKey` parameter, a random UUID is generated automatically.
 
-Pass your own key to safely retry operations without double-processing:
+Pass your own key to safely retry operations without double-processing. Hermes remembers a key for 5 minutes from the first request (a resend within them is refused with 409, also after a 504 job timeout); a bulk payout's key is stored on the payout and refused for good. A resend after those 5 minutes runs again on the other routes.
 
 ```javascript
 const myKey = 'payment-2024-01-15-user123';
@@ -727,9 +728,23 @@ await client.private.tip({
 
 ## Error Handling
 
-All methods throw an `Error` with the server's error message when a request fails:
+Every method throws a `HermesApiError` (an `Error`, exported by the package) when a call fails. Its `message` is the server's `error` text, or the method's own fallback (`"Failed to send tip"`) when the answer has none or there was no answer, as before 0.3.4. Since 0.3.4 it also says what Hermes answered:
+
+| Property | With an answer | Without an answer (timeout, refused or reset connection) |
+|---|---|---|
+| `status` | the HTTP status (`400`, `409`, `504`, …) | `null` |
+| `noResponse` | `false` | `true`: the call may or may not have reached Hermes and run |
+| `code` | Hermes' own `code` from the body (`job_timeout`, `duplicate_idempotency_key`, …), or `null` | the network error's code (`ECONNREFUSED`, `ECONNRESET`, `ECONNABORTED` for the client's `timeout`, …), or `null` |
+| `body` | the answer's body as sent (usually `{ error, … }`; a proxy's HTML page is a string) | `null` |
+| `cause` | the underlying axios error | the underlying axios error |
+
+A guild call answered 401 refreshes the guild session and retries once; if the refresh fails, the error carries the refresh's answer.
+
+A **504 with `code: 'job_timeout'`** means Hermes stopped waiting for the operation's job, which may still complete: check before sending it again, and resend only with the same `idempotencyKey` (Hermes refuses it with 409 while it remembers the key). A **409** means the key was seen: the first request is still running or was done (a bulk payout made with the key answers `code: 'duplicate_idempotency_key'` and `body.bulkPayoutId`).
 
 ```javascript
+import { HermesApiError } from '@hermes-core/api-client';
+
 try {
   await client.private.withdraw({
     ticker: 'RUNES', chainName: 'runebase',
@@ -737,6 +752,15 @@ try {
   });
 } catch (error) {
   console.error(error.message); // e.g. "Insufficient balance"
+  if (error instanceof HermesApiError) {
+    if (error.noResponse) {
+      // no answer (error.code: 'ECONNREFUSED', 'ECONNABORTED', …): unknown whether it ran
+    } else if (error.status === 504 && error.code === 'job_timeout') {
+      // still running, may complete: check, and resend only with the same idempotencyKey
+    } else {
+      // Hermes' answer: error.status, error.code, error.body
+    }
+  }
 }
 ```
 

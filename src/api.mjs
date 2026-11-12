@@ -3,9 +3,12 @@ import { randomUUID } from 'crypto';
 
 import axios from 'axios';
 
+import { toHermesApiError } from './errors.mjs';
+
 export function createPublicApi(config) {
   const api = axios.create({
     baseURL: config.apiUrl,
+    timeout: config.timeout, // ms; 0 = none (the default)
     headers: {
       'Content-Type': 'application/json',
       // No Authorization for public
@@ -17,7 +20,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/health');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Health check failed');
+      throw toHermesApiError(error, 'Health check failed');
     }
   }
 
@@ -27,7 +30,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/operations');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch public info');
+      throw toHermesApiError(error, 'Failed to fetch public info');
     }
   }
 
@@ -37,7 +40,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/coins');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch public info');
+      throw toHermesApiError(error, 'Failed to fetch public info');
     }
   }
 
@@ -46,7 +49,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/wallets`); // Prefix if needed
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch wallets');
+      throw toHermesApiError(error, 'Failed to fetch wallets');
     }
   }
 
@@ -55,7 +58,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/trivia/categories', { params: { page, pageSize } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch trivia categories');
+      throw toHermesApiError(error, 'Failed to fetch trivia categories');
     }
   }
 
@@ -68,7 +71,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/trivia/questions', { params });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch trivia questions');
+      throw toHermesApiError(error, 'Failed to fetch trivia questions');
     }
   }
 
@@ -77,7 +80,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/trivia/questions/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch trivia question');
+      throw toHermesApiError(error, 'Failed to fetch trivia question');
     }
   }
 
@@ -86,7 +89,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/chains');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch chains');
+      throw toHermesApiError(error, 'Failed to fetch chains');
     }
   }
 
@@ -95,7 +98,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/chains/${encodeURIComponent(name)}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch chain');
+      throw toHermesApiError(error, 'Failed to fetch chain');
     }
   }
 
@@ -110,7 +113,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/guilds', { params });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guilds');
+      throw toHermesApiError(error, 'Failed to fetch guilds');
     }
   }
 
@@ -119,7 +122,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/details`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guild details');
+      throw toHermesApiError(error, 'Failed to fetch guild details');
     }
   }
 
@@ -128,7 +131,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/operations/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch operation');
+      throw toHermesApiError(error, 'Failed to fetch operation');
     }
   }
 
@@ -137,7 +140,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/gift/${encodeURIComponent(code)}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch gift');
+      throw toHermesApiError(error, 'Failed to fetch gift');
     }
   }
 
@@ -146,7 +149,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/stats');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch stats');
+      throw toHermesApiError(error, 'Failed to fetch stats');
     }
   }
 
@@ -155,7 +158,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/reviews`, { params: { page, pageSize } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guild reviews');
+      throw toHermesApiError(error, 'Failed to fetch guild reviews');
     }
   }
 
@@ -164,7 +167,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/faucets`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guild faucets');
+      throw toHermesApiError(error, 'Failed to fetch guild faucets');
     }
   }
 
@@ -173,7 +176,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/members`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guild members');
+      throw toHermesApiError(error, 'Failed to fetch guild members');
     }
   }
 
@@ -182,7 +185,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/operations`, { params: { page, limit } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guild operations');
+      throw toHermesApiError(error, 'Failed to fetch guild operations');
     }
   }
 
@@ -191,7 +194,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/rewards/${rewardType}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guild rewards');
+      throw toHermesApiError(error, 'Failed to fetch guild rewards');
     }
   }
 
@@ -202,7 +205,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/schedules`, { params });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guild schedules');
+      throw toHermesApiError(error, 'Failed to fetch guild schedules');
     }
   }
 
@@ -213,7 +216,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/trivia/tickets/pending', { params });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch pending tickets');
+      throw toHermesApiError(error, 'Failed to fetch pending tickets');
     }
   }
 
@@ -224,7 +227,7 @@ export function createPublicApi(config) {
       const response = await api.get('/api/trivia/tickets/resolved', { params });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch resolved tickets');
+      throw toHermesApiError(error, 'Failed to fetch resolved tickets');
     }
   }
 
@@ -233,7 +236,7 @@ export function createPublicApi(config) {
       const response = await api.get(`/api/trivia/tickets/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch ticket');
+      throw toHermesApiError(error, 'Failed to fetch ticket');
     }
   }
 
@@ -267,6 +270,7 @@ export function createPublicApi(config) {
 export function createPrivateApi(config) {
   const api = axios.create({
     baseURL: config.apiUrl,
+    timeout: config.timeout, // ms; 0 = none (the default)
     headers: {
       Authorization: `Bearer ${config.apiKey}`,
       'Content-Type': 'application/json',
@@ -599,7 +603,7 @@ export function createPrivateApi(config) {
 
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to login to guild security');
+      throw toHermesApiError(error, 'Failed to login to guild security');
     }
   }
 
@@ -624,7 +628,7 @@ export function createPrivateApi(config) {
 
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to refresh guild security session');
+      throw toHermesApiError(error, 'Failed to refresh guild security session');
     }
   }
 
@@ -639,7 +643,7 @@ export function createPrivateApi(config) {
       clearGuildSession(guildId);
       return true;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to logout guild security session');
+      throw toHermesApiError(error, 'Failed to logout guild security session');
     }
   }
 
@@ -666,7 +670,7 @@ export function createPrivateApi(config) {
       const response = await api.get('/api/wallets');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch wallets');
+      throw toHermesApiError(error, 'Failed to fetch wallets');
     }
   }
 
@@ -675,7 +679,7 @@ export function createPrivateApi(config) {
       const response = await api.get(`/api/wallets/deposit-address/${encodeURIComponent(chainName)}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch deposit address');
+      throw toHermesApiError(error, 'Failed to fetch deposit address');
     }
   }
 
@@ -691,7 +695,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to create withdrawal');
+      throw toHermesApiError(error, 'Failed to create withdrawal');
     }
   }
 
@@ -700,7 +704,7 @@ export function createPrivateApi(config) {
       const response = await api.get('/api/auth/user');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch user');
+      throw toHermesApiError(error, 'Failed to fetch user');
     }
   }
 
@@ -714,7 +718,7 @@ export function createPrivateApi(config) {
       });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to update user');
+      throw toHermesApiError(error, 'Failed to update user');
     }
   }
 
@@ -723,7 +727,7 @@ export function createPrivateApi(config) {
       const response = await api.get('/api/guilds/user');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch user guilds');
+      throw toHermesApiError(error, 'Failed to fetch user guilds');
     }
   }
 
@@ -732,7 +736,7 @@ export function createPrivateApi(config) {
       const response = await api.get('/api/gift', { params: { page, limit, status } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch gifts');
+      throw toHermesApiError(error, 'Failed to fetch gifts');
     }
   }
 
@@ -748,7 +752,7 @@ export function createPrivateApi(config) {
       const response = await api.post('/api/gift', body, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to create gift');
+      throw toHermesApiError(error, 'Failed to create gift');
     }
   }
 
@@ -760,7 +764,7 @@ export function createPrivateApi(config) {
       const response = await api.post(`/api/gift/${encodeURIComponent(code)}/claim`, body, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to claim gift');
+      throw toHermesApiError(error, 'Failed to claim gift');
     }
   }
 
@@ -770,7 +774,7 @@ export function createPrivateApi(config) {
       const response = await api.delete(`/api/gift/${encodeURIComponent(code)}`, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to cancel gift');
+      throw toHermesApiError(error, 'Failed to cancel gift');
     }
   }
 
@@ -783,7 +787,7 @@ export function createPrivateApi(config) {
       const response = await api.post('/api/store/purchase', body, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to purchase item');
+      throw toHermesApiError(error, 'Failed to purchase item');
     }
   }
 
@@ -797,7 +801,7 @@ export function createPrivateApi(config) {
       const response = await api.post('/api/trivia/submit-question', body);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to submit trivia question');
+      throw toHermesApiError(error, 'Failed to submit trivia question');
     }
   }
 
@@ -809,7 +813,7 @@ export function createPrivateApi(config) {
       const response = await api.post('/api/trivia/submit-category', body);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to submit trivia category');
+      throw toHermesApiError(error, 'Failed to submit trivia category');
     }
   }
 
@@ -821,7 +825,7 @@ export function createPrivateApi(config) {
       const response = await api.post(`/api/trivia/questions/${id}/report`, body);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to report trivia question');
+      throw toHermesApiError(error, 'Failed to report trivia question');
     }
   }
 
@@ -830,7 +834,7 @@ export function createPrivateApi(config) {
       const response = await api.get('/api/trivia/tickets/user', { params: { page, pageSize, state } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch user tickets');
+      throw toHermesApiError(error, 'Failed to fetch user tickets');
     }
   }
 
@@ -839,7 +843,7 @@ export function createPrivateApi(config) {
       const response = await api.post(`/api/trivia/tickets/${ticketId}/vote`, { voteType });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to vote on ticket');
+      throw toHermesApiError(error, 'Failed to vote on ticket');
     }
   }
 
@@ -848,7 +852,7 @@ export function createPrivateApi(config) {
       const response = await api.post(`/api/trivia/questions/${id}/reactivate`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to reactivate trivia question');
+      throw toHermesApiError(error, 'Failed to reactivate trivia question');
     }
   }
 
@@ -857,7 +861,7 @@ export function createPrivateApi(config) {
       const response = await api.get('/api/trivia/trash');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch trashed questions');
+      throw toHermesApiError(error, 'Failed to fetch trashed questions');
     }
   }
 
@@ -866,7 +870,7 @@ export function createPrivateApi(config) {
       const response = await api.get('/api/trivia/is-fact-checker');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to check fact checker status');
+      throw toHermesApiError(error, 'Failed to check fact checker status');
     }
   }
 
@@ -875,7 +879,7 @@ export function createPrivateApi(config) {
       const response = await api.post('/api/trivia/request-tokens');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to request trivia tokens');
+      throw toHermesApiError(error, 'Failed to request trivia tokens');
     }
   }
 
@@ -884,7 +888,7 @@ export function createPrivateApi(config) {
       const response = await api.get('/api/trivia/tokens');
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch trivia tokens');
+      throw toHermesApiError(error, 'Failed to fetch trivia tokens');
     }
   }
 
@@ -899,7 +903,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to send tip');
+      throw toHermesApiError(error, 'Failed to send tip');
     }
   }
 
@@ -928,7 +932,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate reactdrop');
+      throw toHermesApiError(error, 'Failed to initiate reactdrop');
     }
   }
 
@@ -953,7 +957,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate partydrop');
+      throw toHermesApiError(error, 'Failed to initiate partydrop');
     }
   }
 
@@ -976,7 +980,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate flood');
+      throw toHermesApiError(error, 'Failed to initiate flood');
     }
   }
 
@@ -999,7 +1003,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate rain');
+      throw toHermesApiError(error, 'Failed to initiate rain');
     }
   }
 
@@ -1022,7 +1026,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate soak');
+      throw toHermesApiError(error, 'Failed to initiate soak');
     }
   }
 
@@ -1045,7 +1049,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate wave');
+      throw toHermesApiError(error, 'Failed to initiate wave');
     }
   }
 
@@ -1080,7 +1084,7 @@ export function createPrivateApi(config) {
       const response = await api.post('/api/airdrop/trivia', payload, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate trivia drop');
+      throw toHermesApiError(error, 'Failed to initiate trivia drop');
     }
   }
 
@@ -1097,7 +1101,7 @@ export function createPrivateApi(config) {
       }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to send guild tip');
+      throw toHermesApiError(error, 'Failed to send guild tip');
     }
   }
 
@@ -1120,7 +1124,7 @@ export function createPrivateApi(config) {
       }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate guild flood');
+      throw toHermesApiError(error, 'Failed to initiate guild flood');
     }
   }
 
@@ -1143,7 +1147,7 @@ export function createPrivateApi(config) {
       }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate guild rain');
+      throw toHermesApiError(error, 'Failed to initiate guild rain');
     }
   }
 
@@ -1166,7 +1170,7 @@ export function createPrivateApi(config) {
       }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate guild soak');
+      throw toHermesApiError(error, 'Failed to initiate guild soak');
     }
   }
 
@@ -1195,7 +1199,7 @@ export function createPrivateApi(config) {
       }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate guild reactdrop');
+      throw toHermesApiError(error, 'Failed to initiate guild reactdrop');
     }
   }
 
@@ -1220,7 +1224,7 @@ export function createPrivateApi(config) {
       }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate guild partydrop');
+      throw toHermesApiError(error, 'Failed to initiate guild partydrop');
     }
   }
 
@@ -1255,7 +1259,7 @@ export function createPrivateApi(config) {
       const response = await guildPost(guildId, `/api/guilds/${guildId}/airdrop/trivia`, payload, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate guild trivia drop');
+      throw toHermesApiError(error, 'Failed to initiate guild trivia drop');
     }
   }
 
@@ -1278,7 +1282,7 @@ export function createPrivateApi(config) {
       }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate guild wave');
+      throw toHermesApiError(error, 'Failed to initiate guild wave');
     }
   }
 
@@ -1303,7 +1307,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate sleet');
+      throw toHermesApiError(error, 'Failed to initiate sleet');
     }
   }
 
@@ -1328,7 +1332,7 @@ export function createPrivateApi(config) {
       }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to initiate guild sleet');
+      throw toHermesApiError(error, 'Failed to initiate guild sleet');
     }
   }
 
@@ -1344,7 +1348,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to create bulk payout');
+      throw toHermesApiError(error, 'Failed to create bulk payout');
     }
   }
 
@@ -1353,7 +1357,7 @@ export function createPrivateApi(config) {
       const response = await api.get('/api/bulk-payout', { params: { page, limit } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch bulk payouts');
+      throw toHermesApiError(error, 'Failed to fetch bulk payouts');
     }
   }
 
@@ -1362,7 +1366,7 @@ export function createPrivateApi(config) {
       const response = await api.get(`/api/bulk-payout/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch bulk payout');
+      throw toHermesApiError(error, 'Failed to fetch bulk payout');
     }
   }
 
@@ -1378,7 +1382,7 @@ export function createPrivateApi(config) {
       }, { 'X-Idempotency-Key': key });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to create guild bulk payout');
+      throw toHermesApiError(error, 'Failed to create guild bulk payout');
     }
   }
 
@@ -1389,7 +1393,7 @@ export function createPrivateApi(config) {
       );
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guild bulk payouts');
+      throw toHermesApiError(error, 'Failed to fetch guild bulk payouts');
     }
   }
 
@@ -1400,7 +1404,7 @@ export function createPrivateApi(config) {
       );
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch guild bulk payout');
+      throw toHermesApiError(error, 'Failed to fetch guild bulk payout');
     }
   }
 
@@ -1415,7 +1419,7 @@ export function createPrivateApi(config) {
       }, { headers: { 'X-Idempotency-Key': key } });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to process donation');
+      throw toHermesApiError(error, 'Failed to process donation');
     }
   }
 
@@ -1424,7 +1428,7 @@ export function createPrivateApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/invite-hermes`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch invite link');
+      throw toHermesApiError(error, 'Failed to fetch invite link');
     }
   }
 
@@ -1433,7 +1437,7 @@ export function createPrivateApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/user-roles`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch user guild roles');
+      throw toHermesApiError(error, 'Failed to fetch user guild roles');
     }
   }
 
@@ -1442,7 +1446,7 @@ export function createPrivateApi(config) {
       const response = await api.post(`/api/guilds/${guildId}/faucets/${faucetId}/claim`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to claim faucet');
+      throw toHermesApiError(error, 'Failed to claim faucet');
     }
   }
 
@@ -1451,7 +1455,7 @@ export function createPrivateApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/vote/history`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch vote history');
+      throw toHermesApiError(error, 'Failed to fetch vote history');
     }
   }
 
@@ -1460,7 +1464,7 @@ export function createPrivateApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/bump/history`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch bump history');
+      throw toHermesApiError(error, 'Failed to fetch bump history');
     }
   }
 
@@ -1469,7 +1473,7 @@ export function createPrivateApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/schedules/${scheduleId}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch schedule');
+      throw toHermesApiError(error, 'Failed to fetch schedule');
     }
   }
 
@@ -1480,7 +1484,7 @@ export function createPrivateApi(config) {
       const response = await api.get(`/api/guilds/${guildId}/security/status`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch security status');
+      throw toHermesApiError(error, 'Failed to fetch security status');
     }
   }
 
@@ -1489,7 +1493,7 @@ export function createPrivateApi(config) {
       const response = await api.post(`/api/guilds/${guildId}/security/claim`, { email, password });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to claim guild security');
+      throw toHermesApiError(error, 'Failed to claim guild security');
     }
   }
 
@@ -1501,7 +1505,7 @@ export function createPrivateApi(config) {
       });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to update password');
+      throw toHermesApiError(error, 'Failed to update password');
     }
   }
 
@@ -1510,7 +1514,7 @@ export function createPrivateApi(config) {
       const response = await guildPost(guildId, `/api/guilds/${guildId}/security/email`, { email });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to update email');
+      throw toHermesApiError(error, 'Failed to update email');
     }
   }
 
@@ -1519,7 +1523,7 @@ export function createPrivateApi(config) {
       const response = await guildPost(guildId, `/api/guilds/${guildId}/security/email/verify`, { token });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to verify email');
+      throw toHermesApiError(error, 'Failed to verify email');
     }
   }
 
@@ -1528,7 +1532,7 @@ export function createPrivateApi(config) {
       const response = await guildGet(guildId, `/api/guilds/${guildId}/security/operators`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch operators');
+      throw toHermesApiError(error, 'Failed to fetch operators');
     }
   }
 
@@ -1541,7 +1545,7 @@ export function createPrivateApi(config) {
       });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to add operator');
+      throw toHermesApiError(error, 'Failed to add operator');
     }
   }
 
@@ -1550,7 +1554,7 @@ export function createPrivateApi(config) {
       const response = await guildDeleteReq(guildId, `/api/guilds/${guildId}/security/operators/${userId}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to remove operator');
+      throw toHermesApiError(error, 'Failed to remove operator');
     }
   }
 
@@ -1559,7 +1563,7 @@ export function createPrivateApi(config) {
       const response = await guildGet(guildId, `/api/guilds/${guildId}/security/roles`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to fetch security roles');
+      throw toHermesApiError(error, 'Failed to fetch security roles');
     }
   }
 
@@ -1568,7 +1572,7 @@ export function createPrivateApi(config) {
       const response = await guildPost(guildId, `/api/guilds/${guildId}/security/roles`, { roleId });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to add security role');
+      throw toHermesApiError(error, 'Failed to add security role');
     }
   }
 
@@ -1577,7 +1581,7 @@ export function createPrivateApi(config) {
       const response = await guildDeleteReq(guildId, `/api/guilds/${guildId}/security/roles/${roleId}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to remove security role');
+      throw toHermesApiError(error, 'Failed to remove security role');
     }
   }
 
@@ -1586,7 +1590,7 @@ export function createPrivateApi(config) {
       const response = await api.post(`/api/guilds/${guildId}/security/reset/request`, { email });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to request password reset');
+      throw toHermesApiError(error, 'Failed to request password reset');
     }
   }
 
@@ -1595,7 +1599,7 @@ export function createPrivateApi(config) {
       const response = await api.post(`/api/guilds/${guildId}/security/reset/confirm`, { token, newPassword });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to confirm password reset');
+      throw toHermesApiError(error, 'Failed to confirm password reset');
     }
   }
 
@@ -1606,7 +1610,7 @@ export function createPrivateApi(config) {
       const response = await guildPatch(guildId, `/api/guilds/${guildId}/settings`, { publicOperations });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to update guild settings');
+      throw toHermesApiError(error, 'Failed to update guild settings');
     }
   }
 
@@ -1615,7 +1619,7 @@ export function createPrivateApi(config) {
       const response = await guildPatch(guildId, `/api/guilds/${guildId}/settings/faucet-notify-channel`, { channelId });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to update faucet notify channel');
+      throw toHermesApiError(error, 'Failed to update faucet notify channel');
     }
   }
 
@@ -1633,7 +1637,7 @@ export function createPrivateApi(config) {
       });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to create faucet');
+      throw toHermesApiError(error, 'Failed to create faucet');
     }
   }
 
@@ -1642,7 +1646,7 @@ export function createPrivateApi(config) {
       const response = await guildDeleteReq(guildId, `/api/guilds/${guildId}/faucets/${faucetId}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to delete faucet');
+      throw toHermesApiError(error, 'Failed to delete faucet');
     }
   }
 
@@ -1657,7 +1661,7 @@ export function createPrivateApi(config) {
       });
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to create reward');
+      throw toHermesApiError(error, 'Failed to create reward');
     }
   }
 
@@ -1670,7 +1674,7 @@ export function createPrivateApi(config) {
       const response = await guildPatch(guildId, `/api/guilds/${guildId}/rewards/${rewardType}/${ticker}`, body);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to update reward');
+      throw toHermesApiError(error, 'Failed to update reward');
     }
   }
 
@@ -1702,7 +1706,7 @@ export function createPrivateApi(config) {
       const response = await guildPost(guildId, `/api/guilds/${guildId}/schedules`, body);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to create schedule');
+      throw toHermesApiError(error, 'Failed to create schedule');
     }
   }
 
@@ -1741,7 +1745,7 @@ export function createPrivateApi(config) {
       );
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to update schedule');
+      throw toHermesApiError(error, 'Failed to update schedule');
     }
   }
 
@@ -1750,7 +1754,7 @@ export function createPrivateApi(config) {
       const response = await guildDeleteReq(guildId, `/api/guilds/${guildId}/schedules/${scheduleId}`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.error || 'Failed to delete schedule');
+      throw toHermesApiError(error, 'Failed to delete schedule');
     }
   }
 

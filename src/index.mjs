@@ -2,6 +2,8 @@
 import { createSocket } from './socket.mjs';
 import { createPrivateApi, createPublicApi } from './api.mjs';
 import { createConfig } from './config.mjs';
+
+export { HermesApiError } from './errors.mjs';
 // import { waitForStores } from './waitForStores.mjs';
 
 export function createHermesClient(options = {}) {
